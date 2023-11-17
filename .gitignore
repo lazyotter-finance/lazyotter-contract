@@ -1,0 +1,24 @@
+.DS_Store
+.vscode/
+.bak
+.env
+
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*
+
+# Test Coverage Output
+lcov.info
+coverage/
+
+# Storage slot
+/crytic-export
+storage_layout_*.json
+
+# Demo Usage
+/script/demo
+*.sh

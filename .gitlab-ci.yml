@@ -1,0 +1,11 @@
+stages:
+  - test
+
+test:
+  stage: test
+  image: ghcr.io/foundry-rs/foundry:nightly-f64fe134f9f8e28f31b22b68baebdd8abb93533e
+  script:
+    - export SCROLL_TESTNET_RPC_URL=$SCROLL_TESTNET_RPC_URL
+    - export PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+    - forge install
+    - forge coverage --report summary

@@ -1,0 +1,13 @@
+[profile.default]
+src = 'src'
+out = 'out'
+libs = ['lib']
+fuzz_runs = 5000
+fuzz_max_global_rejects = 2_000_000
+
+[rpc_endpoints]
+arbitrum = "${ARBITRUM_RPC_URL}"
+scroll_testnet = "${SCROLL_TESTNET_RPC_URL}"
+
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
