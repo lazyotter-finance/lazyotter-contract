@@ -67,7 +67,7 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
     }
 
     function decimals() public view override returns (uint8) {
-        return ERC20(address(asset)).decimals();
+        return ERC20(address(asset)).decimals() + _decimalsOffset();
     }
 
     function totalAssets() public view virtual returns (uint256) {
