@@ -9,7 +9,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol";
 import {IWETH} from "../../src/interfaces/lazyotter/IWETH.sol";
-import {UniswapHelper} from "../../src/utils/UniswapHelper.sol";
+import {UniswapHelper} from "../../src/helper/UniswapHelper.sol";
 import {AaveVault} from "../../src/vaults/AaveVault.sol";
 import {Vault} from "../../src/vaults/Vault.sol";
 

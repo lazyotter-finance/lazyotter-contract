@@ -12,7 +12,7 @@ import {IRewardsController} from "../interfaces/aave/IRewardsController.sol";
 import {IDataProvider} from "../interfaces/aave/IDataProvider.sol";
 import {ILendingPool} from "../interfaces/aave/ILendingPool.sol";
 
-import {UniswapHelper} from "../utils/UniswapHelper.sol";
+import {UniswapHelper} from "../helper/UniswapHelper.sol";
 import {Vault} from "./Vault.sol";
 
 contract AaveVault is Vault {

@@ -5,33 +5,33 @@ pragma solidity 0.8.20;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Test.sol";
+import {ScrollMainnet} from "../config/AddressBook.sol";
 
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
-import {IRewardsController} from "../../src/interfaces/aave/IRewardsController.sol";
-import {IDataProvider} from "../../src/interfaces/aave/IDataProvider.sol";
-import {ILendingPool} from "../../src/interfaces/aave/ILendingPool.sol";
+import {IRewardsController} from "../src/interfaces/aave/IRewardsController.sol";
+import {IDataProvider} from "../src/interfaces/aave/IDataProvider.sol";
+import {ILendingPool} from "../src/interfaces/aave/ILendingPool.sol";
 
-import {AaveVault} from "../../src/vaults/AaveVault.sol";
-import {Vault} from "../../src/vaults/Vault.sol";
+import {AaveVault} from "../src/vaults/AaveVault.sol";
+import {Vault} from "../src/vaults/Vault.sol";
 
 contract AaveVaultTest is Test {
     address alice = address(1);
 
-    IERC20 USDC = IERC20(vm.envAddress("SCROLL_TESTNET_USDC"));
-    IERC20 WETH = IERC20(vm.envAddress("SCROLL_TESTNET_WETH"));
+    IERC20 USDC = IERC20(ScrollMainnet.USDC);
+    IERC20 WETH = IERC20(ScrollMainnet.WETH);
 
-    IDataProvider dataProvider = IDataProvider(vm.envAddress("SCROLL_TESTNET_AAVE_DATAPROVIDER"));
-    ILendingPool lendingPool = ILendingPool(vm.envAddress("SCROLL_TESTNET_AAVE_LENDINGPOOL"));
-    IRewardsController rewardsController = IRewardsController(vm.envAddress("SCROLL_TESTNET_AAVE_REWARDSCONTROLLER"));
-
-    ISwapRouter public swapRouter = ISwapRouter(vm.envAddress("SCROLL_TESTNET_UNISWAP_SWAPROUTER"));
-    IUniswapV3Factory public factory = IUniswapV3Factory(vm.envAddress("SCROLL_TESTNET_UNISWAP_FACTORY"));
+    IDataProvider dataProvider = IDataProvider(ScrollMainnet.AAVE_DATAPROVIDER);
+    ILendingPool lendingPool = ILendingPool(ScrollMainnet.AAVE_LENDINGPOOL);
+    IRewardsController rewardsController = IRewardsController(ScrollMainnet.AAVE_REWARDSCONTROLLER);
+    ISwapRouter public swapRouter = ISwapRouter(ScrollMainnet.UNISWAP_SWAPROUTER);
+    IUniswapV3Factory public factory = IUniswapV3Factory(ScrollMainnet.UNISWAP_FACTORY);
 
     AaveVault public vault;
 
     function setUp() public {
-        vm.createSelectFork(vm.rpcUrl("scroll_testnet"));
+        vm.createSelectFork(vm.rpcUrl("scroll"), 3248043);
 
         vault = new AaveVault(
             USDC,
@@ -49,7 +49,7 @@ contract AaveVaultTest is Test {
     }
 
     function testDeposit() public {
-        uint256 amount = 1000;
+        uint256 amount = 100 * 1e6;
         deal(address(USDC), address(this), amount);
         USDC.approve(address(vault), amount);
         vault.deposit(amount, address(this));
@@ -70,7 +70,7 @@ contract AaveVaultTest is Test {
     // }
 
     function testWithdraw() public {
-        uint256 amount = 10000;
+        uint256 amount = 100 * 1e6;
         deal(address(USDC), address(this), amount);
 
         USDC.approve(address(vault), amount);
@@ -82,7 +82,7 @@ contract AaveVaultTest is Test {
     }
 
     function testEmergencyWithdraws() public {
-        uint256 totalAmount = 10 * 1e6;
+        uint256 totalAmount = 100 * 1e6;
         uint256 halfAmount = totalAmount / 2;
 
         deal(address(USDC), address(this), totalAmount);

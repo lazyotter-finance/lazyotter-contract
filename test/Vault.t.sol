@@ -4,8 +4,9 @@ pragma solidity 0.8.20;
 import {IERC20, IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Test.sol";
+import {ScrollMainnet} from "../config/AddressBook.sol";
 
-import {Vault} from "../../src/vaults/Vault.sol";
+import {Vault} from "../src/vaults/Vault.sol";
 
 contract VaultTest is Test {
     address alice = address(1);
@@ -15,17 +16,17 @@ contract VaultTest is Test {
         uint256 timestamp;
     }
 
-    IERC20 USDC = IERC20(vm.envAddress("SCROLL_TESTNET_USDC"));
+    IERC20 USDC = IERC20(ScrollMainnet.USDC);
 
     Vault public vault;
 
-    address public constant treauy = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address public constant treasury = ScrollMainnet.LO_TREASURY;
 
     function setUp() public {
-        vm.createSelectFork(vm.rpcUrl("scroll_testnet"));
+        vm.createSelectFork(vm.rpcUrl("scroll"));
 
         address[] memory recipients = new address[](1);
-        recipients[0] = treauy;
+        recipients[0] = treasury;
 
         uint256[] memory recipientWeights = new uint256[](1);
         recipientWeights[0] = 1000;
@@ -44,7 +45,7 @@ contract VaultTest is Test {
     }
 
     function testDecimals() public {
-        assertEq(IERC20Metadata(address(USDC)).decimals(), vault.decimals());
+        assertEq(IERC20Metadata(address(USDC)).decimals() + 6, vault.decimals());
     }
 
     function testMaxDeposit() public {
@@ -92,9 +93,10 @@ contract VaultTest is Test {
 
         vm.roll(block.number + 10000);
 
-        vault.withdraw(0, treauy, treauy);
+        vault.withdraw(amount, address(this), address(this));
 
         assertEq(vault.balanceOf(address(this)), 0);
+        assertEq(true, USDC.balanceOf(treasury) > 0);
     }
 
     function testWithdrawalRecipient() public {
@@ -107,7 +109,7 @@ contract VaultTest is Test {
 
         vault.withdraw(amount, address(this), address(this));
 
-        assertEq(true, USDC.balanceOf(treauy) > 0);
+        assertEq(true, USDC.balanceOf(treasury) > 0);
     }
 
     function testEmergencyWithdraws() public {
@@ -123,11 +125,11 @@ contract VaultTest is Test {
     }
 
     function testSetFeeInfo() public {
-        address newTreauy1 = 0x0000000000000000000000000000000000000000;
-        address newTreauy2 = 0x0000000000000000000000000000000000000001;
+        address newtreasury1 = 0x0000000000000000000000000000000000000000;
+        address newtreasury2 = 0x0000000000000000000000000000000000000001;
         address[] memory _recipients = new address[](2);
-        _recipients[0] = newTreauy1;
-        _recipients[1] = newTreauy2;
+        _recipients[0] = newtreasury1;
+        _recipients[1] = newtreasury2;
         uint256[] memory _recipientWeights = new uint256[](2);
         _recipientWeights[0] = 500;
         _recipientWeights[1] = 500;
