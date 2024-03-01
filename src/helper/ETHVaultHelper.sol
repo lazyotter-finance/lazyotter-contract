@@ -23,6 +23,9 @@ contract ETHVaultHelper {
     }
 
     function mintETH(address vault, uint256 shares, address receiver) external payable {
+        uint256 assets = IVault(vault).previewMint(shares);
+        require(assets == msg.value, "wrong eth amount");
+        
         WETH.deposit{value: msg.value}();
         WETH.approve(vault, msg.value);
         IVault(vault).mint(shares, receiver);
