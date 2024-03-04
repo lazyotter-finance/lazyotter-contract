@@ -69,6 +69,17 @@ contract ETHVaultHelperTest is Test {
         assertEq(vault.balanceOf(address(this)), shares);
     }
 
+    function testMintETHRefund() public {
+        uint256 shares = 1e24;
+        uint256 assets = vault.previewMint(shares);
+        uint256 balance = address(this).balance;
+
+        ethVaultHelper.mintETH{value: assets + 1 ether}(address(vault), shares, address(this));
+
+        assertEq(vault.balanceOf(address(this)), shares);
+        assertEq(address(this).balance, balance - assets);
+    }
+
     function testWithdrawETH() public {
         uint256 assets = 1 ether;
 
@@ -93,7 +104,7 @@ contract ETHVaultHelperTest is Test {
 
         assertEq(address(this).balance, balance + assets);
     }
-    
+
     receive() external payable {}
 
     fallback() external payable {}
