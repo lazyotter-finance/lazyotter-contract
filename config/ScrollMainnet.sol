@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+library ScrollMainnet {
+    address constant LO_TREASURY = 0x0;
+    address constant KEEPER = 0x0;
+
+    address constant WETH = 0x5300000000000000000000000000000000000004;
+    address constant USDC = 0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4;
+
+    address constant AAVE_DATAPROVIDER =
+        0xa99F4E69acF23C6838DE90dD1B5c02EA928A53ee;
+    address constant AAVE_LENDINGPOOL =
+        0x11fCfe756c05AD438e312a7fd934381537D3cFfe;
+    address constant AAVE_REWARDSCONTROLLER =
+        0xa76F05D0cdf599E0186dec880F2FA480fd0c5280;
+
+    address constant UNISWAP_FACTORY =
+        0x70C62C8b8e801124A4Aa81ce07b637A3e83cb919;
+    address constant UNISWAP_SWAPROUTER =
+        0xfc30937f5cDe93Df8d48aCAF7e6f5D8D8A31F636;
+
+    address constant WOMBAT_POOL = 0x80f088ae72DB6d1AC337340cd6Aa0EB1F67337CE;
+    address constant WOMBAT_MASTERWOMBAT =
+        0xbc007EEA00EA4b240E803A7dD39026554fBbA64a;
+    address constant WOMBAT_USDC_LP =
+        0xE2a60C52C4abB9fbc3f711da3cb9E633269DBC67;
+
+    address constant SYNCSWAP_ROUTER =
+        0x80e38291e06339d10AAB483C65695D004dBD5C69;
+    address constant SYNCSWAP_USDC_WETH_LP =
+        0x814A23B053FD0f102AEEda0459215C2444799C70;
+
+    address constant LAYERBANK_CORE =
+        0xEC53c830f4444a8A56455c6836b5D2aA794289Aa;
+    address constant LAYERBANK_IUSDC =
+        0x0D8F8e271DD3f2fC58e5716d3Ff7041dBe3F0688;
+}

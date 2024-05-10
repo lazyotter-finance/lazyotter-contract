@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+library ScrollTestnet {
+    address constant LO_TREASURY = 0x0;
+    address constant KEEPER = 0x0;
+
+    address constant WETH = 0xb123dCe044EdF0a755505d9623Fba16C0F41cae9;
+    address constant USDC = 0x2C9678042D52B97D27f2bD2947F7111d93F3dD0D;
+
+    address constant AAVE_DATAPROVIDER = 0xaE58b3Be9E159bDEc67Ada8507CA3001c80725Ee;
+    address constant AAVE_LENDINGPOOL = 0x48914C788295b5db23aF2b5F0B3BE775C4eA9440;
+    address constant AAVE_REWARDSCONTROLLER = 0xa76F05D0cdf599E0186dec880F2FA480fd0c5280;
+
+    address constant UNISWAP_FACTORY = 0xB856587fe1cbA8600F75F1b1176E44250B11C788;
+    address constant UNISWAP_SWAPROUTER = 0x17AFD0263D6909Ba1F9a8EAC697f76532365Fb95;
+}
