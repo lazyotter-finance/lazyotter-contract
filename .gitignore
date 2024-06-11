@@ -2,6 +2,7 @@
 .vscode/
 .bak
 .env
+node_modules/
 
 # Compiler files
 cache/

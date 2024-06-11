@@ -46,11 +46,7 @@ contract LayerBankVaultTest is Test {
         vault.deposit(amount, address(this));
 
         // why minus 1e6 is because layerbank return the rounding result to user
-        assertApproxEqAbs(
-            vault.balanceOf(address(this)),
-            vault.previewDeposit(amount),
-            1e6
-        );
+        assertApproxEqAbs(vault.balanceOf(address(this)), vault.previewDeposit(amount), 1e6);
     }
 
     function testWithdraw() public {

@@ -33,13 +33,7 @@ contract Deploy is Script {
         uint256[] memory recipientWeights = new uint256[](1);
         recipientWeights[0] = 500;
 
-        Vault.FeeInfo memory feeInfo = Vault.FeeInfo(
-            recipients,
-            recipientWeights,
-            200,
-            0,
-            0
-        );
+        Vault.FeeInfo memory feeInfo = Vault.FeeInfo(recipients, recipientWeights, 200, 0, 0);
 
         vm.startBroadcast(deployerPrivateKey);
 
