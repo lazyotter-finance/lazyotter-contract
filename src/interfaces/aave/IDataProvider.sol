@@ -3,14 +3,12 @@
 pragma solidity 0.8.20;
 
 interface IDataProvider {
-    function getReserveTokensAddresses(
-        address asset
-    ) external view returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress);
+    function getReserveTokensAddresses(address asset)
+        external
+        view
+        returns (address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress);
 
-    function getUserReserveData(
-        address asset,
-        address user
-    )
+    function getUserReserveData(address asset, address user)
         external
         view
         returns (
