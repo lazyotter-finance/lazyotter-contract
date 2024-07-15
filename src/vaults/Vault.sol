@@ -47,7 +47,9 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
     event Deposit(address indexed caller, address indexed owner, uint256 assets, uint256 shares);
 
     /// @notice Emitted when a withdrawal is made.
-    event Withdraw(address indexed caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares);
+    event Withdraw(
+        address indexed caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares
+    );
 
     /// @notice Emitted when a harvest is performed.
     event Harvest(address indexed caller, uint256 harvestAssets);
@@ -169,7 +171,7 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
      * @return uint256 Preview shares.
      */
     function previewWithdraw(uint256 assets) public view returns (uint256) {
-        return _convertToShares(assets, Math.Rounding.Floor);
+        return _convertToShares(assets, Math.Rounding.Ceil);
     }
 
     /**
@@ -178,7 +180,7 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
      * @return uint256 Preview assets.
      */
     function previewRedeem(uint256 shares) public view returns (uint256) {
-        return _convertToAssets(shares, Math.Rounding.Ceil);
+        return _convertToAssets(shares, Math.Rounding.Floor);
     }
 
     /**

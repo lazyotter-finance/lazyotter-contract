@@ -5,6 +5,8 @@ pragma solidity 0.8.20;
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
 import {Zap} from "../utils/Zap.sol";
 import {FixedPoint} from "../utils/FixedPoint.sol";
 
@@ -19,7 +21,7 @@ import "forge-std/console.sol";
  * @title AmbientVaultHelper
  * @dev Helper contract for interacting with SyncSwap pools and vaults.
  */
-contract AmbientVaultHelper {
+contract AmbientVaultHelper is ReentrancyGuard {
     struct TokenInput {
         address token;
         uint256 amount;
@@ -37,6 +39,11 @@ contract AmbientVaultHelper {
         uint128 upper;
     }
 
+    struct RemoveLiquidityParams {
+        bool isBase;
+        uint128 minOut;
+    }
+
     using SafeERC20 for IERC20;
     using Address for address;
 
@@ -52,16 +59,22 @@ contract AmbientVaultHelper {
     ICrocQuery public crocQuery;
 
     constructor(ICrocSwapDex _crocSwapDex, ICrocQuery _crocQuery) {
+        require(address(_crocSwapDex) != address(0) && address(_crocQuery) != address(0), "INVALID_ADDRESS");
         crocSwapDex = _crocSwapDex;
         crocQuery = _crocQuery;
     }
 
-    function deposit(TokenInput[] calldata inputs, LimitPrice calldata limitPrice, address vault, address receiver)
-        external
-        payable
-        returns (uint256)
-    {
+    function deposit(
+        TokenInput[] calldata inputs,
+        LimitPrice calldata limitPrice,
+        uint128 minOut,
+        address vault,
+        address receiver
+    ) external payable returns (uint256) {
         require(inputs.length < 3, "TOO_MANY_INPUT_TOKENS");
+        if (inputs.length == 2) {
+            require(inputs[0].token != inputs[1].token, "DUPLICATE_TOKENS");
+        }
 
         // quote token: x, base token: y, native ETH will always be the base token
         PoolInfo memory poolInfo = PoolInfo({
@@ -77,7 +90,7 @@ contract AmbientVaultHelper {
         TokenInput[] memory normalizedInputs = _normalizeTokenInput(vault, inputs);
 
         // this function will modify the value of normalizedInputs
-        _zap(normalizedInputs, limitPrice, poolInfo);
+        _zap(normalizedInputs, limitPrice, poolInfo, minOut);
 
         if (poolInfo.baseToken == NATIVE_ETH) {
             IERC20(normalizedInputs[0].token).approve(address(crocSwapDex), normalizedInputs[0].amount);
@@ -148,10 +161,13 @@ contract AmbientVaultHelper {
         return (uint256(-quoteTokenFlow), uint256(-baseTokenFlow));
     }
 
-    function redeemSingle(LimitPrice calldata limitPrice, bool isBase, address vault, uint256 shares, address receiver)
-        external
-        returns (uint256)
-    {
+    function redeemSingle(
+        LimitPrice calldata limitPrice,
+        RemoveLiquidityParams calldata params,
+        address vault,
+        uint256 shares,
+        address receiver
+    ) external returns (uint256) {
         PoolInfo memory poolInfo = PoolInfo({
             quoteToken: IVault(vault).quoteToken(),
             quoteTokenAmount: _getPoolQuoteTokenAmount(vault),
@@ -165,12 +181,18 @@ contract AmbientVaultHelper {
 
         (int256 baseTokenFlow, int256 quoteTokenFlow) = abi.decode(returnMsg, (int256, int256));
 
-        if (isBase == true) {
+        if (params.isBase == true) {
             // quote token -> base token
             IERC20(poolInfo.quoteToken).approve(address(crocSwapDex), uint256(-quoteTokenFlow));
 
-            returnMsg =
-                _swap(poolInfo, false, false, _safeConvertUint256ToUint128(uint256(-quoteTokenFlow)), limitPrice.lower);
+            returnMsg = _swap(
+                poolInfo,
+                false,
+                false,
+                _safeConvertUint256ToUint128(uint256(-quoteTokenFlow)),
+                limitPrice.lower,
+                params.minOut
+            );
 
             (int256 swapBaseTokenFlow,) = abi.decode(returnMsg, (int256, int256));
             uint256 transferAmount = uint256(-baseTokenFlow) + uint256(-swapBaseTokenFlow);
@@ -183,8 +205,14 @@ contract AmbientVaultHelper {
                 IERC20(poolInfo.baseToken).approve(address(crocSwapDex), uint256(-baseTokenFlow));
             }
 
-            returnMsg =
-                _swap(poolInfo, true, true, _safeConvertUint256ToUint128(uint256(-baseTokenFlow)), limitPrice.upper);
+            returnMsg = _swap(
+                poolInfo,
+                true,
+                true,
+                _safeConvertUint256ToUint128(uint256(-baseTokenFlow)),
+                limitPrice.upper,
+                params.minOut
+            );
 
             (, int256 swapQuoteTokenFlow) = abi.decode(returnMsg, (int256, int256));
             uint256 transferAmount = uint256(-quoteTokenFlow) + uint256(-swapQuoteTokenFlow);
@@ -223,7 +251,7 @@ contract AmbientVaultHelper {
 
     function withdrawSingle(
         LimitPrice calldata limitPrice,
-        bool isBase,
+        RemoveLiquidityParams calldata params,
         address vault,
         uint256 assets,
         address receiver
@@ -241,12 +269,18 @@ contract AmbientVaultHelper {
 
         (int256 baseTokenFlow, int256 quoteTokenFlow) = abi.decode(returnMsg, (int256, int256));
 
-        if (isBase == true) {
+        if (params.isBase == true) {
             // quote token -> base token
             IERC20(poolInfo.quoteToken).approve(address(crocSwapDex), uint256(-quoteTokenFlow));
 
-            returnMsg =
-                _swap(poolInfo, false, false, _safeConvertUint256ToUint128(uint256(-quoteTokenFlow)), limitPrice.lower);
+            returnMsg = _swap(
+                poolInfo,
+                false,
+                false,
+                _safeConvertUint256ToUint128(uint256(-quoteTokenFlow)),
+                limitPrice.lower,
+                params.minOut
+            );
 
             (int256 swapBaseTokenFlow,) = abi.decode(returnMsg, (int256, int256));
             uint256 transferAmount = uint256(-baseTokenFlow) + uint256(-swapBaseTokenFlow);
@@ -259,8 +293,14 @@ contract AmbientVaultHelper {
                 IERC20(poolInfo.baseToken).approve(address(crocSwapDex), uint256(-baseTokenFlow));
             }
 
-            returnMsg =
-                _swap(poolInfo, true, true, _safeConvertUint256ToUint128(uint256(-baseTokenFlow)), limitPrice.upper);
+            returnMsg = _swap(
+                poolInfo,
+                true,
+                true,
+                _safeConvertUint256ToUint128(uint256(-baseTokenFlow)),
+                limitPrice.upper,
+                params.minOut
+            );
 
             (, int256 swapQuoteTokenFlow) = abi.decode(returnMsg, (int256, int256));
             uint256 transferAmount = uint256(-quoteTokenFlow) + uint256(-swapQuoteTokenFlow);
@@ -308,7 +348,9 @@ contract AmbientVaultHelper {
         // no need to set inputs amount to 0, because it won't need to be used anymore
     }
 
-    function _zap(TokenInput[] memory inputs, LimitPrice memory limitPrice, PoolInfo memory poolInfo) private {
+    function _zap(TokenInput[] memory inputs, LimitPrice memory limitPrice, PoolInfo memory poolInfo, uint128 minOut)
+        private
+    {
         // n * y > m * x
         bool swap0To1 = inputs[0].amount * poolInfo.baseTokenAmount > inputs[1].amount * poolInfo.quoteTokenAmount;
         // The maximum fee constant in Ambient is 1_000_000
@@ -344,7 +386,7 @@ contract AmbientVaultHelper {
             // quote token -> base token
             // in this case(swap0To1 == true), quoteTokenFlow is positive, baseTokenFlow is negative
             IERC20(inputs[0].token).approve(address(crocSwapDex), deltaX);
-            returnBytes = _swap(poolInfo, false, false, _safeConvertUint256ToUint128(deltaX), limitPrice.lower);
+            returnBytes = _swap(poolInfo, false, false, _safeConvertUint256ToUint128(deltaX), limitPrice.lower, minOut);
             (baseTokenFlow, quoteTokenFlow) = abi.decode(returnBytes, (int256, int256));
 
             inputs[0].amount = _safeSubUint256AndInt256(inputs[0].amount, quoteTokenFlow);
@@ -356,7 +398,7 @@ contract AmbientVaultHelper {
                 IERC20(inputs[1].token).approve(address(crocSwapDex), deltaX);
             }
 
-            returnBytes = _swap(poolInfo, true, true, _safeConvertUint256ToUint128(deltaX), limitPrice.upper);
+            returnBytes = _swap(poolInfo, true, true, _safeConvertUint256ToUint128(deltaX), limitPrice.upper, minOut);
             (baseTokenFlow, quoteTokenFlow) = abi.decode(returnBytes, (int128, int128));
 
             inputs[0].amount = _safeSubUint256AndInt256(inputs[0].amount, quoteTokenFlow);
@@ -364,10 +406,14 @@ contract AmbientVaultHelper {
         }
     }
 
-    function _swap(PoolInfo memory poolInfo, bool isBuy, bool inBaseQty, uint128 qty, uint128 limitPrice)
-        private
-        returns (bytes memory)
-    {
+    function _swap(
+        PoolInfo memory poolInfo,
+        bool isBuy,
+        bool inBaseQty,
+        uint128 qty,
+        uint128 limitPrice,
+        uint128 minOut
+    ) private returns (bytes memory) {
         if (poolInfo.baseToken == NATIVE_ETH && isBuy == true) {
             return crocSwapDex.userCmd{value: qty}(
                 uint16(1),
@@ -380,7 +426,7 @@ contract AmbientVaultHelper {
                     qty,
                     uint16(0),
                     limitPrice,
-                    uint128(1),
+                    minOut,
                     uint8(0)
                 )
             );
@@ -396,7 +442,7 @@ contract AmbientVaultHelper {
                     qty,
                     uint16(0),
                     limitPrice,
-                    uint128(1),
+                    minOut,
                     uint8(0)
                 )
             );
@@ -456,9 +502,9 @@ contract AmbientVaultHelper {
         }
     }
 
-    function _transferTo(address receiver, address token, uint256 amount) private {
+    function _transferTo(address receiver, address token, uint256 amount) private nonReentrant {
         if (token == NATIVE_ETH) {
-            (bool sent,) = receiver.call{value: amount}("");
+            (bool sent,) = receiver.call{value: amount, gas: 2300}("");
             require(sent, "FAILED_TO_SEND_ETHER");
         } else {
             IERC20(token).safeTransfer(receiver, amount);
