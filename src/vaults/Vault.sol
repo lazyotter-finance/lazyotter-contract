@@ -108,6 +108,24 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
     }
 
     /**
+     * @notice Converts a given amount of assets to shares
+     * @param assets The amount of assets to be converted to shares
+     * @return The amount of shares that would be exchanged for the given assets
+     */
+    function convertToShares(uint256 assets) public view virtual returns (uint256) {
+        return _convertToShares(assets, Math.Rounding.Floor);
+    }
+
+    /**
+     * @notice Converts a given amount of shares to assets
+     * @param shares The amount of shares to be converted to assets
+     * @return The amount of assets that would be exchanged for the given shares
+     */
+    function convertToAssets(uint256 shares) public view virtual returns (uint256) {
+        return _convertToAssets(shares, Math.Rounding.Floor);
+    }
+
+    /**
      * @notice Returns the maximum amount that can be deposited.
      * @param account The address of the account.
      * @return uint256 Maximum deposit amount.
@@ -135,7 +153,7 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
      * @return uint256 Maximum withdraw amount.
      */
     function maxWithdraw(address owner) public view virtual returns (uint256) {
-        return _convertToAssets(balanceOf(owner), Math.Rounding.Ceil);
+        return _convertToAssets(balanceOf(owner), Math.Rounding.Floor);
     }
 
     /**
