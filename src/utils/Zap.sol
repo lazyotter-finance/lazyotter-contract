@@ -18,11 +18,14 @@ library Zap {
      * @param maxFee The maximum swap fee with decimals.
      * @return uint256 The calculated delta value for X.
      */
-    function getDeltaX(uint256 x, uint256 y, uint256 n, uint256 m, uint256 fee, uint256 maxFee)
-        internal
-        pure
-        returns (uint256)
-    {
+    function getDeltaX(
+        uint256 x,
+        uint256 y,
+        uint256 n,
+        uint256 m,
+        uint256 fee,
+        uint256 maxFee
+    ) internal pure returns (uint256) {
         uint256 maxFeeMinusFee = maxFee - fee;
         uint256 mPlusY = m + y;
         uint256 nPlusX = n + x;

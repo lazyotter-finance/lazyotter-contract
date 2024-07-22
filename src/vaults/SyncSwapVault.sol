@@ -11,7 +11,6 @@ import {Vault} from "./Vault.sol";
  * @dev A vault contract for managing deposits and withdrawals, inheriting from the Vault contract.
  */
 contract SyncSwapVault is Vault {
-
     /**
      * @dev Constructor for the SyncSwapVault contract.
      * @param _asset The underlying asset of the vault.
@@ -20,7 +19,11 @@ contract SyncSwapVault is Vault {
      * @param _feeInfo The initial fee information.
      * @param _keeper The address of the keeper.
      */
-    constructor(IERC20 _asset, string memory _name, string memory _symbol, FeeInfo memory _feeInfo, address _keeper)
-        Vault(_asset, _name, _symbol, _feeInfo, _keeper)
-    {}
+    constructor(
+        IERC20 _asset,
+        string memory _name,
+        string memory _symbol,
+        FeeInfo memory _feeInfo,
+        address _keeper
+    ) Vault(_asset, _name, _symbol, _feeInfo, _keeper) {}
 }

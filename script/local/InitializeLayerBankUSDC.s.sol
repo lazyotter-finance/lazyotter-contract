@@ -21,11 +21,9 @@ contract Initialize is Script {
     IERC20 USDC = IERC20(ScrollMainnet.USDC);
     IWETH WETH = IWETH(ScrollMainnet.WETH);
 
-    ISwapRouter public swapRouter =
-        ISwapRouter(ScrollMainnet.UNISWAP_SWAPROUTER);
+    ISwapRouter public swapRouter = ISwapRouter(ScrollMainnet.UNISWAP_SWAPROUTER);
 
-    LayerBankVault public layerBankUSDCVault =
-        LayerBankVault(vm.envAddress("SCROLL_LAYERBANK_USDC_VAULT"));
+    LayerBankVault public layerBankUSDCVault = LayerBankVault(vm.envAddress("SCROLL_LAYERBANK_USDC_VAULT"));
 
     function run() external {
         uint256 WETHAmount = 15 ether;
@@ -39,20 +37,15 @@ contract Initialize is Script {
 
         WETH.approve(address(swapRouter), WETHAmount + 1 ether);
 
-        TransferHelper.safeApprove(
-            address(WETH),
-            address(swapRouter),
-            WETHAmount
-        );
+        TransferHelper.safeApprove(address(WETH), address(swapRouter), WETHAmount);
 
-        ISwapRouter.ExactOutputParams memory params = ISwapRouter
-            .ExactOutputParams({
-                path: abi.encodePacked(USDC, fee, WETH),
-                recipient: owner,
-                deadline: block.timestamp + 1 minutes,
-                amountOut: amount,
-                amountInMaximum: WETHAmount
-            });
+        ISwapRouter.ExactOutputParams memory params = ISwapRouter.ExactOutputParams({
+            path: abi.encodePacked(USDC, fee, WETH),
+            recipient: owner,
+            deadline: block.timestamp + 1 minutes,
+            amountOut: amount,
+            amountInMaximum: WETHAmount
+        });
 
         // swap
         // TODO: [Revert] EvmError: Revert

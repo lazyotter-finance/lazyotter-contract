@@ -38,8 +38,13 @@ contract Deploy is Script {
 
         CrocLpErc20 crocLpErc20 = new CrocLpErc20(crocSwapDex, address(ETH), address(USDC), 420);
 
-        AmbientVault ambientVault =
-            new AmbientVault(IERC20(address(crocLpErc20)), "LazyOtter: Vault AMBIENT USDC ETH", "LOT", feeInfo, keeper);
+        AmbientVault ambientVault = new AmbientVault(
+            IERC20(address(crocLpErc20)),
+            "LazyOtter: Vault AMBIENT USDC ETH",
+            "LOT",
+            feeInfo,
+            keeper
+        );
 
         vm.stopBroadcast();
 
