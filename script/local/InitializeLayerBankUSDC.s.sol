@@ -23,7 +23,7 @@ contract Initialize is Script {
 
     ISwapRouter public swapRouter = ISwapRouter(ScrollMainnet.UNISWAP_SWAPROUTER);
 
-    LayerBankVault public layerBankUSDCVault = LayerBankVault(vm.envAddress("SCROLL_LAYERBANK_USDC_VAULT"));
+    LayerBankVault public layerBankUSDCVault = LayerBankVault(payable(vm.envAddress("SCROLL_LAYERBANK_USDC_VAULT")));
 
     function run() external {
         uint256 WETHAmount = 15 ether;
