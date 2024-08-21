@@ -64,7 +64,7 @@ contract RhoMarketsVault is Vault {
 
         uint256 borrowRate = interestRateModel.getBorrowRate(totalCash, totalBorrows, totalReserves);
 
-        uint256 simpleInterestFactor = borrowRate * (block.timestamp - RErc20.accrualBlockNumber());
+        uint256 simpleInterestFactor = borrowRate * (block.number - RErc20.accrualBlockNumber());
         uint256 interestAccumulated = (simpleInterestFactor * totalBorrows) / 1e18;
 
         totalBorrows = interestAccumulated + totalBorrows;
