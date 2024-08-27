@@ -9,6 +9,7 @@ library ScrollMainnet {
     address constant USDC = 0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4;
     address constant wrsETH = 0xa25b25548B4C98B0c7d3d27dcA5D5ca743d68b7F;
     address constant wstETH = 0xf610A9dfB7C89644979b4A0f27063E9e7d7Cda32;
+    address constant aScrUSDC = 0x1D738a3436A8C49CefFbaB7fbF04B660fb528CbD;
 
     address constant AAVE_DATAPROVIDER = 0xa99F4E69acF23C6838DE90dD1B5c02EA928A53ee;
     address constant AAVE_LENDINGPOOL = 0x11fCfe756c05AD438e312a7fd934381537D3cFfe;
