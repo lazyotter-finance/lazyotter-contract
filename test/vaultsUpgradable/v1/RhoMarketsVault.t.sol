@@ -5,14 +5,15 @@ pragma solidity ^0.8.24;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Test.sol";
-import {ScrollMainnet} from "../config/AddressBook.sol";
+import {ScrollMainnet} from "../../../config/AddressBook.sol";
 
-import {IRErc20Delegator} from "../src/interfaces/rhoMarkets/IRErc20Delegator.sol";
-import {IComptroller} from "../src/interfaces/rhoMarkets/IComptroller.sol";
-import {IREther} from "../src/interfaces/rhoMarkets/IREther.sol";
+import {IRErc20Delegator} from "../../../src/interfaces/rhoMarkets/IRErc20Delegator.sol";
+import {IComptroller} from "../../../src/interfaces/rhoMarkets/IComptroller.sol";
+import {IREther} from "../../../src/interfaces/rhoMarkets/IREther.sol";
 
-import {RhoMarketsVault} from "../src/vaults/RhoMarketsVault.sol";
-import {Vault} from "../src/vaults/Vault.sol";
+import {RhoMarketsVault} from "../../../src/vaultsUpgradable/v1/RhoMarketsVault.sol";
+import {Beacon} from "../../../src/vaultsUpgradable/Beacon.sol";
+import {Proxy} from "../../../src/vaultsUpgradable/Proxy.sol";
 
 contract RhoMarketsVaultTest is Test {
     address alice = address(1);
@@ -23,18 +24,26 @@ contract RhoMarketsVaultTest is Test {
     IREther public RWETH = IREther(ScrollMainnet.RHO_MARKETS_WETH);
 
     RhoMarketsVault public vault;
+    Beacon public beacon;
+    Proxy public proxy;
 
     function setUp() public {
         vm.createSelectFork(vm.rpcUrl("scroll"), 7889975);
 
-        vault = new RhoMarketsVault(
-            USDC,
-            "Vault Token",
-            "vUSDCE",
-            Vault.FeeInfo(new address[](0), new uint256[](0), 0, 0, 0),
-            alice,
-            RUSDC
-        );
+        // Deploy the implementation contract
+        RhoMarketsVault vaultImplementation = new RhoMarketsVault();
+
+        // Deploy the UpgradeableBeacon
+        beacon = new Beacon(address(vaultImplementation));
+
+        // Prepare initialization data for the vault
+        bytes memory initData = abi.encodeCall(RhoMarketsVault.initialize, (USDC, "Vault Token", "vUSDC", alice, RUSDC));
+
+        // Deploy the BeaconProxy
+        proxy = new Proxy(address(beacon), initData);
+
+        // Set the vault variable to point to the proxy
+        vault = RhoMarketsVault(address(proxy));
     }
 
     function testDeposit() public {

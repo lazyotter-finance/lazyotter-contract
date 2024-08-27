@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 library ScrollTestnet {
-    address constant LO_TREASURY = 0x0;
-    address constant KEEPER = 0x0;
+    address constant LO_TREASURY = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+    address constant KEEPER = 0xda2546159Ea5B6f62CC8F2635961E79cDCf68218;
 
     address constant WETH = 0xb123dCe044EdF0a755505d9623Fba16C0F41cae9;
     address constant USDC = 0x2C9678042D52B97D27f2bD2947F7111d93F3dD0D;

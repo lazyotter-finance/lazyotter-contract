@@ -5,17 +5,17 @@ pragma solidity ^0.8.24;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Test.sol";
-import {ScrollMainnet} from "../config/AddressBook.sol";
+import {ScrollMainnet} from "../../config/AddressBook.sol";
 
 import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
-import {IRewardsController} from "../src/interfaces/aave/IRewardsController.sol";
-import {IDataProvider} from "../src/interfaces/aave/IDataProvider.sol";
-import {ILendingPool} from "../src/interfaces/aave/ILendingPool.sol";
+import {IRewardsController} from "../../src/interfaces/aave/IRewardsController.sol";
+import {IDataProvider} from "../../src/interfaces/aave/IDataProvider.sol";
+import {ILendingPool} from "../../src/interfaces/aave/ILendingPool.sol";
 
-import {AaveVault} from "../src/vaults/AaveVault.sol";
-import {Vault} from "../src/vaults/Vault.sol";
-import {ETHVaultHelper} from "../src/helper/ETHVaultHelper.sol";
+import {AaveVault} from "../../src/vaults/AaveVault.sol";
+import {Vault} from "../../src/vaults/Vault.sol";
+import {ETHVaultHelper} from "../../src/helper/ETHVaultHelper.sol";
 
 contract ETHVaultHelperTest is Test {
     address alice = address(1);

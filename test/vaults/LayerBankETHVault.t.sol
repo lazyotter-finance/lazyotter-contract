@@ -5,14 +5,14 @@ pragma solidity ^0.8.24;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Test.sol";
-import {ScrollMainnet} from "../config/AddressBook.sol";
+import {ScrollMainnet} from "../../config/AddressBook.sol";
 
-import {ICore} from "../src/interfaces/layerbank/ICore.sol";
-import {IToken} from "../src/interfaces/layerbank/IToken.sol";
+import {ICore} from "../../src/interfaces/layerbank/ICore.sol";
+import {IToken} from "../../src/interfaces/layerbank/IToken.sol";
 
-import {LayerBankVault} from "../src/vaults/LayerBankVault.sol";
-import {Vault} from "../src/vaults/Vault.sol";
-import {ETHVaultHelper} from "../src/helper/ETHVaultHelper.sol";
+import {LayerBankVault} from "../../src/vaults/LayerBankVault.sol";
+import {Vault} from "../../src/vaults/Vault.sol";
+import {ETHVaultHelper} from "../../src/helper/ETHVaultHelper.sol";
 
 contract LayerBankETHVaultTest is Test {
     address alice = address(1);

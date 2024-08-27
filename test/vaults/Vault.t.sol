@@ -4,9 +4,9 @@ pragma solidity ^0.8.24;
 import {IERC20, IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Test.sol";
-import {ScrollMainnet} from "../config/AddressBook.sol";
+import {ScrollMainnet} from "../../config/AddressBook.sol";
 
-import {Vault} from "../src/vaults/Vault.sol";
+import {Vault} from "../../src/vaults/Vault.sol";
 
 contract VaultTest is Test {
     address alice = address(1);

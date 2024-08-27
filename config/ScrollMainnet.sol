@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 library ScrollMainnet {
-    address constant LO_TREASURY = 0x0;
-    address constant KEEPER = 0x0;
+    address constant LO_TREASURY = 0xAe7B98fbfAde07682115c54f5087C15016095F1b;
+    address constant KEEPER = 0xda2546159Ea5B6f62CC8F2635961E79cDCf68218;
 
     address constant WETH = 0x5300000000000000000000000000000000000004;
     address constant USDC = 0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4;
