@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "prettier": "prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol' 'script/**/*.sol' 'test/**/*.sol'"
+    "prettier": "prettier --write --plugin=prettier-plugin-solidity 'src/**/*.sol' 'script/**/*.sol' 'test/**/*.sol'",
+    "prepare": "husky"
   },
   "dependencies": {
     "prettier": "^3.3.1",

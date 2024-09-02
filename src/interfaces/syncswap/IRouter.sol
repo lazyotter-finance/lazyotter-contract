@@ -121,11 +121,10 @@ interface IRouter {
     ) external returns (IPool.TokenAmount memory amounts);
 
     // Performs a swap.
-    function swap(
-        SwapPath[] memory paths,
-        uint256 amountOutMin,
-        uint256 deadline
-    ) external payable returns (IPool.TokenAmount memory amounts);
+    function swap(SwapPath[] memory paths, uint256 amountOutMin, uint256 deadline)
+        external
+        payable
+        returns (IPool.TokenAmount memory amounts);
 
     function swapWithPermit(
         SwapPath[] memory paths,

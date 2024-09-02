@@ -14,8 +14,6 @@ import {IInterestRateModel} from "../../interfaces/rhoMarkets/IInterestRateModel
 
 import {Vault} from "./Vault.sol";
 
-import "forge-std/console.sol";
-
 /// @title RhoMarketsVault
 /// @notice A vault contract for interacting with Rho Markets
 /// @dev This contract extends the Vault contract and interacts with Rho Markets' Comptroller and RErc20 contracts
@@ -66,6 +64,10 @@ contract RhoMarketsVault is Vault {
     /// The address of the depositor (unused in this implementation)
     /// @return The maximum amount that can be deposited
     function maxDeposit(address) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+
         RhoMarketsVaultStorage storage $ = _getRhoMarketsVaultStorage();
         IComptroller comptroller = $.comptroller;
         IRErc20Delegator RErc20 = $.RErc20;
@@ -83,7 +85,7 @@ contract RhoMarketsVault is Vault {
 
         uint256 borrowRate = interestRateModel.getBorrowRate(totalCash, totalBorrows, totalReserves);
 
-        uint256 simpleInterestFactor = borrowRate * (block.timestamp - RErc20.accrualBlockNumber());
+        uint256 simpleInterestFactor = borrowRate * (block.number - RErc20.accrualBlockNumber());
         uint256 interestAccumulated = (simpleInterestFactor * totalBorrows) / 1e18;
 
         totalBorrows = interestAccumulated + totalBorrows;
@@ -98,13 +100,40 @@ contract RhoMarketsVault is Vault {
         return 0;
     }
 
+    /**
+     * @notice Returns the maximum amount of shares that can be minted.
+     * @param receiver The address of the receiver.
+     * @return uint256 Maximum mint amount.
+     */
+    function maxMint(address receiver) public view override returns (uint256) {
+        if (paused()) {
+            return 0;
+        }
+
+        uint256 _maxDeposit = maxDeposit(receiver);
+        if (_maxDeposit == type(uint256).max) {
+            return type(uint256).max;
+        }
+        return _convertToShares(_maxDeposit, Math.Rounding.Floor);
+    }
+
     /// @notice Calculates the maximum amount that can be withdrawn
     /// @param owner The address of the token owner
     /// @return The maximum amount that can be withdrawn
     function maxWithdraw(address owner) public view override returns (uint256) {
         RhoMarketsVaultStorage storage $ = _getRhoMarketsVaultStorage();
+        IERC20 asset = IERC20(asset());
 
-        return Math.min(convertToAssets(balanceOf(owner)), $.RErc20.getCash());
+        return Math.min(convertToAssets(balanceOf(owner)), $.RErc20.getCash() + asset.balanceOf(address(this)));
+    }
+
+    /**
+     * @notice Returns the maximum amount of shares that can be redeemed.
+     * @param owner The address of the owner.
+     * @return uint256 Maximum redeem amount.
+     */
+    function maxRedeem(address owner) public view override returns (uint256) {
+        return _convertToShares(maxWithdraw(owner), Math.Rounding.Floor);
     }
 
     /// @notice Calculates the total assets managed by the vault
@@ -134,7 +163,8 @@ contract RhoMarketsVault is Vault {
         uint256 currentAssets = asset.balanceOf(address(this));
         if (currentAssets > 0) {
             asset.safeIncreaseAllowance(address(RErc20), currentAssets);
-            RErc20.mint(currentAssets);
+            uint256 err = RErc20.mint(currentAssets);
+            require(err == 0, "RErc20.mint failed");
         }
     }
 
@@ -149,7 +179,8 @@ contract RhoMarketsVault is Vault {
         uint256 currentAssets = asset.balanceOf(address(this));
         if (assets > currentAssets) {
             uint256 shortAssets = assets - currentAssets;
-            RErc20.redeemUnderlying(shortAssets);
+            uint256 err = RErc20.redeemUnderlying(shortAssets);
+            require(err == 0, "RErc20.redeemUnderlying failed");
         }
     }
 }

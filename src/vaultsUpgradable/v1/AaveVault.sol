@@ -10,8 +10,6 @@ import {ILendingPool} from "../../interfaces/aave/ILendingPool.sol";
 
 import {Vault} from "./Vault.sol";
 
-import "forge-std/console.sol";
-
 contract AaveVault is Vault {
     using SafeERC20 for IERC20;
 
@@ -56,7 +54,7 @@ contract AaveVault is Vault {
         IERC20 asset = IERC20(asset());
 
         uint256 assets = asset.balanceOf(address(this));
-        (uint256 depositedAssets, , , , , , , , ) = $.dataProvider.getUserReserveData(address(asset), address(this));
+        (uint256 depositedAssets,,,,,,,,) = $.dataProvider.getUserReserveData(address(asset), address(this));
         return assets + depositedAssets;
     }
 

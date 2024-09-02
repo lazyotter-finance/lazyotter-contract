@@ -76,10 +76,11 @@ contract AmbientVaultHelper is ReentrancyGuard {
         return IVault(vault).previewRedeem(shares);
     }
 
-    function previewAmountByAsset(
-        address vault,
-        uint256 assets
-    ) public view returns (uint256 quoteTokenAmount, uint256 baseTokenAmount) {
+    function previewAmountByAsset(address vault, uint256 assets)
+        public
+        view
+        returns (uint256 quoteTokenAmount, uint256 baseTokenAmount)
+    {
         uint128 price = crocQuery.queryPrice(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420);
         uint128 liquidity = _safeConvertUint256ToUint128(assets);
 
@@ -89,10 +90,11 @@ contract AmbientVaultHelper is ReentrancyGuard {
         return (uint256(quoteQty), uint256(baseQty));
     }
 
-    function previewAmountByShare(
-        address vault,
-        uint256 shares
-    ) public view returns (uint256 quoteTokenAmount, uint256 baseTokenAmount) {
+    function previewAmountByShare(address vault, uint256 shares)
+        public
+        view
+        returns (uint256 quoteTokenAmount, uint256 baseTokenAmount)
+    {
         uint256 assets = previewRedeem(vault, shares);
 
         uint128 price = crocQuery.queryPrice(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420);
@@ -145,8 +147,8 @@ contract AmbientVaultHelper is ReentrancyGuard {
         bytes memory returnMsg;
         // if the x y ratio in the pool is greater than the x y ratio in the inputs, add liquidity fixed in X token(quote token)
         if (
-            uint256(poolInfo.quoteTokenAmount) * normalizedInputs[1].amount >
-            uint256(poolInfo.baseTokenAmount) * normalizedInputs[0].amount
+            uint256(poolInfo.quoteTokenAmount) * normalizedInputs[1].amount
+                > uint256(poolInfo.baseTokenAmount) * normalizedInputs[0].amount
         ) {
             returnMsg = _addLiquidity(
                 32, // fixed in quote tokens
@@ -178,12 +180,10 @@ contract AmbientVaultHelper is ReentrancyGuard {
         return shares;
     }
 
-    function redeem(
-        LimitPrice calldata limitPrice,
-        address vault,
-        uint256 shares,
-        address receiver
-    ) external returns (uint256 quoteTokenAmount, uint256 baseTokenAmount) {
+    function redeem(LimitPrice calldata limitPrice, address vault, uint256 shares, address receiver)
+        external
+        returns (uint256 quoteTokenAmount, uint256 baseTokenAmount)
+    {
         PoolInfo memory poolInfo = PoolInfo({
             quoteToken: IVault(vault).quoteToken(),
             quoteTokenAmount: _getPoolQuoteTokenAmount(vault),
@@ -236,7 +236,7 @@ contract AmbientVaultHelper is ReentrancyGuard {
                 params.minOut
             );
 
-            (int256 swapBaseTokenFlow, ) = abi.decode(returnMsg, (int256, int256));
+            (int256 swapBaseTokenFlow,) = abi.decode(returnMsg, (int256, int256));
             uint256 transferAmount = uint256(-baseTokenFlow) + uint256(-swapBaseTokenFlow);
 
             _transferTo(receiver, IVault(vault).baseToken(), transferAmount);
@@ -264,12 +264,10 @@ contract AmbientVaultHelper is ReentrancyGuard {
         }
     }
 
-    function withdraw(
-        LimitPrice calldata limitPrice,
-        address vault,
-        uint256 assets,
-        address receiver
-    ) external returns (uint256 quoteTokenAmount, uint256 baseTokenAmount) {
+    function withdraw(LimitPrice calldata limitPrice, address vault, uint256 assets, address receiver)
+        external
+        returns (uint256 quoteTokenAmount, uint256 baseTokenAmount)
+    {
         IVault(vault).withdraw(assets, address(this), msg.sender);
 
         IERC20(IVault(vault).asset()).approve(address(crocSwapDex), assets);
@@ -326,7 +324,7 @@ contract AmbientVaultHelper is ReentrancyGuard {
                 params.minOut
             );
 
-            (int256 swapBaseTokenFlow, ) = abi.decode(returnMsg, (int256, int256));
+            (int256 swapBaseTokenFlow,) = abi.decode(returnMsg, (int256, int256));
             uint256 transferAmount = uint256(-baseTokenFlow) + uint256(-swapBaseTokenFlow);
 
             _transferTo(receiver, IVault(vault).baseToken(), transferAmount);
@@ -354,29 +352,26 @@ contract AmbientVaultHelper is ReentrancyGuard {
         }
     }
 
-    function _removeLiquidity(
-        PoolInfo memory poolInfo,
-        uint128 amount,
-        LimitPrice memory limitPrice,
-        address vault
-    ) private returns (bytes memory) {
-        return
-            crocSwapDex.userCmd(
-                uint16(128),
-                abi.encode(
-                    4, // fixed in liquidity units
-                    poolInfo.baseToken,
-                    poolInfo.quoteToken,
-                    uint256(420), // poolIdx
-                    int24(0), // bidTick, ignore if it's ambient liquidity
-                    int24(0), // askTick, ignore if it's ambient liquidity
-                    amount,
-                    limitPrice.lower,
-                    limitPrice.upper,
-                    uint8(0), // settleFlags
-                    address(IVault(vault).asset())
-                )
-            );
+    function _removeLiquidity(PoolInfo memory poolInfo, uint128 amount, LimitPrice memory limitPrice, address vault)
+        private
+        returns (bytes memory)
+    {
+        return crocSwapDex.userCmd(
+            uint16(128),
+            abi.encode(
+                4, // fixed in liquidity units
+                poolInfo.baseToken,
+                poolInfo.quoteToken,
+                uint256(420), // poolIdx
+                int24(0), // bidTick, ignore if it's ambient liquidity
+                int24(0), // askTick, ignore if it's ambient liquidity
+                amount,
+                limitPrice.lower,
+                limitPrice.upper,
+                uint8(0), // settleFlags
+                address(IVault(vault).asset())
+            )
+        );
     }
 
     function _refund(TokenInput[] memory inputs, bytes memory returnMsg) private {
@@ -395,12 +390,9 @@ contract AmbientVaultHelper is ReentrancyGuard {
         // no need to set inputs amount to 0, because it won't need to be used anymore
     }
 
-    function _zap(
-        TokenInput[] memory inputs,
-        LimitPrice memory limitPrice,
-        PoolInfo memory poolInfo,
-        uint128 minOut
-    ) private {
+    function _zap(TokenInput[] memory inputs, LimitPrice memory limitPrice, PoolInfo memory poolInfo, uint128 minOut)
+        private
+    {
         // n * y > m * x
         bool swap0To1 = inputs[0].amount * poolInfo.baseTokenAmount > inputs[1].amount * poolInfo.quoteTokenAmount;
         // The maximum fee constant in Ambient is 1_000_000
@@ -409,27 +401,23 @@ contract AmbientVaultHelper is ReentrancyGuard {
         // estimate deltaX, could be wrong if the liquidity in current price tick is not enough, will refund the extra amount to user
         uint256 deltaX;
         if (swap0To1) {
-            deltaX =
-                Zap.getDeltaX(
-                    poolInfo.quoteTokenAmount / SCALE_FACTOR,
-                    poolInfo.baseTokenAmount / SCALE_FACTOR,
-                    inputs[0].amount / SCALE_FACTOR,
-                    inputs[1].amount / SCALE_FACTOR,
-                    swapFee,
-                    MAX_FEE
-                ) *
-                SCALE_FACTOR;
+            deltaX = Zap.getDeltaX(
+                poolInfo.quoteTokenAmount / SCALE_FACTOR,
+                poolInfo.baseTokenAmount / SCALE_FACTOR,
+                inputs[0].amount / SCALE_FACTOR,
+                inputs[1].amount / SCALE_FACTOR,
+                swapFee,
+                MAX_FEE
+            ) * SCALE_FACTOR;
         } else {
-            deltaX =
-                Zap.getDeltaX(
-                    poolInfo.baseTokenAmount / SCALE_FACTOR,
-                    poolInfo.quoteTokenAmount / SCALE_FACTOR,
-                    inputs[1].amount / SCALE_FACTOR,
-                    inputs[0].amount / SCALE_FACTOR,
-                    swapFee,
-                    MAX_FEE
-                ) *
-                SCALE_FACTOR;
+            deltaX = Zap.getDeltaX(
+                poolInfo.baseTokenAmount / SCALE_FACTOR,
+                poolInfo.quoteTokenAmount / SCALE_FACTOR,
+                inputs[1].amount / SCALE_FACTOR,
+                inputs[0].amount / SCALE_FACTOR,
+                swapFee,
+                MAX_FEE
+            ) * SCALE_FACTOR;
         }
 
         bytes memory returnBytes;
@@ -469,39 +457,37 @@ contract AmbientVaultHelper is ReentrancyGuard {
         uint128 minOut
     ) private returns (bytes memory) {
         if (poolInfo.baseToken == NATIVE_ETH && isBuy == true) {
-            return
-                crocSwapDex.userCmd{value: qty}(
-                    uint16(1),
-                    abi.encode(
-                        poolInfo.baseToken,
-                        poolInfo.quoteToken,
-                        uint256(420),
-                        isBuy,
-                        inBaseQty,
-                        qty,
-                        uint16(0),
-                        limitPrice,
-                        minOut,
-                        uint8(0)
-                    )
-                );
+            return crocSwapDex.userCmd{value: qty}(
+                uint16(1),
+                abi.encode(
+                    poolInfo.baseToken,
+                    poolInfo.quoteToken,
+                    uint256(420),
+                    isBuy,
+                    inBaseQty,
+                    qty,
+                    uint16(0),
+                    limitPrice,
+                    minOut,
+                    uint8(0)
+                )
+            );
         } else {
-            return
-                crocSwapDex.userCmd(
-                    uint16(1),
-                    abi.encode(
-                        poolInfo.baseToken,
-                        poolInfo.quoteToken,
-                        uint256(420),
-                        isBuy,
-                        inBaseQty,
-                        qty,
-                        uint16(0),
-                        limitPrice,
-                        minOut,
-                        uint8(0)
-                    )
-                );
+            return crocSwapDex.userCmd(
+                uint16(1),
+                abi.encode(
+                    poolInfo.baseToken,
+                    poolInfo.quoteToken,
+                    uint256(420),
+                    isBuy,
+                    inBaseQty,
+                    qty,
+                    uint16(0),
+                    limitPrice,
+                    minOut,
+                    uint8(0)
+                )
+            );
         }
     }
 
@@ -514,41 +500,39 @@ contract AmbientVaultHelper is ReentrancyGuard {
         address vault
     ) private returns (bytes memory) {
         if (poolInfo.baseToken == NATIVE_ETH) {
-            return
-                crocSwapDex.userCmd{value: inputs[1].amount}(
-                    uint16(128),
-                    abi.encode(
-                        code,
-                        poolInfo.baseToken,
-                        poolInfo.quoteToken,
-                        uint256(420), // poolIdx
-                        int24(0), // bidTick, ignore if it's ambient liquidity
-                        int24(0), // askTick, ignore if it's ambient liquidity
-                        amount,
-                        limitPrice.lower,
-                        limitPrice.upper,
-                        uint8(0), // settleFlags
-                        address(IVault(vault).asset())
-                    )
-                );
+            return crocSwapDex.userCmd{value: inputs[1].amount}(
+                uint16(128),
+                abi.encode(
+                    code,
+                    poolInfo.baseToken,
+                    poolInfo.quoteToken,
+                    uint256(420), // poolIdx
+                    int24(0), // bidTick, ignore if it's ambient liquidity
+                    int24(0), // askTick, ignore if it's ambient liquidity
+                    amount,
+                    limitPrice.lower,
+                    limitPrice.upper,
+                    uint8(0), // settleFlags
+                    address(IVault(vault).asset())
+                )
+            );
         } else {
-            return
-                crocSwapDex.userCmd(
-                    uint16(128),
-                    abi.encode(
-                        code,
-                        poolInfo.baseToken,
-                        poolInfo.quoteToken,
-                        uint256(420), // poolIdx
-                        int24(0), // bidTick, ignore if it's ambient liquidity
-                        int24(0), // askTick, ignore if it's ambient liquidity
-                        amount,
-                        limitPrice.lower,
-                        limitPrice.upper,
-                        uint8(0), // settleFlags
-                        address(IVault(vault).asset())
-                    )
-                );
+            return crocSwapDex.userCmd(
+                uint16(128),
+                abi.encode(
+                    code,
+                    poolInfo.baseToken,
+                    poolInfo.quoteToken,
+                    uint256(420), // poolIdx
+                    int24(0), // bidTick, ignore if it's ambient liquidity
+                    int24(0), // askTick, ignore if it's ambient liquidity
+                    amount,
+                    limitPrice.lower,
+                    limitPrice.upper,
+                    uint8(0), // settleFlags
+                    address(IVault(vault).asset())
+                )
+            );
         }
     }
 
@@ -562,17 +546,18 @@ contract AmbientVaultHelper is ReentrancyGuard {
 
     function _transferTo(address receiver, address token, uint256 amount) private nonReentrant {
         if (token == NATIVE_ETH) {
-            (bool sent, ) = receiver.call{value: amount}("");
+            (bool sent,) = receiver.call{value: amount}("");
             require(sent, "FAILED_TO_SEND_ETHER");
         } else {
             IERC20(token).safeTransfer(receiver, amount);
         }
     }
 
-    function _normalizeTokenInput(
-        address vault,
-        TokenInput[] memory inputs
-    ) private view returns (TokenInput[] memory) {
+    function _normalizeTokenInput(address vault, TokenInput[] memory inputs)
+        private
+        view
+        returns (TokenInput[] memory)
+    {
         TokenInput[] memory normalizedInputs = new TokenInput[](2);
         uint256 quoteTokenAmount = 0;
         uint256 baseTokenAmount = 0;
@@ -599,23 +584,21 @@ contract AmbientVaultHelper is ReentrancyGuard {
     }
 
     function _getPoolQuoteTokenAmount(address vault) private view returns (uint128) {
-        return
-            uint128(
-                FixedPoint.divQ64(
-                    crocQuery.queryLiquidity(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420),
-                    crocQuery.queryPrice(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420)
-                )
-            );
+        return uint128(
+            FixedPoint.divQ64(
+                crocQuery.queryLiquidity(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420),
+                crocQuery.queryPrice(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420)
+            )
+        );
     }
 
     function _getPoolBaseTokenAmount(address vault) private view returns (uint128) {
-        return
-            uint128(
-                FixedPoint.mulQ64(
-                    crocQuery.queryLiquidity(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420),
-                    crocQuery.queryPrice(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420)
-                )
-            );
+        return uint128(
+            FixedPoint.mulQ64(
+                crocQuery.queryLiquidity(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420),
+                crocQuery.queryPrice(IVault(vault).baseToken(), IVault(vault).quoteToken(), 420)
+            )
+        );
     }
 
     function _safeConvertUint256ToUint128(uint256 _value) private pure returns (uint128) {
