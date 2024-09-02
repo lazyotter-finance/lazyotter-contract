@@ -8,7 +8,7 @@ pragma solidity ^0.8.24;
  * @notice Standard interface for contracts that accept and manage LP positions on behalf
  *         of end users. Typical example would be an ERC20 tracker for LP tokens. */
 interface ICrocLpConduit {
-    /* @notice Called anytime a user mints liquidity against the conduit instance. To 
+    /* @notice Called anytime a user mints liquidity against the conduit instance. To
      *         utilize the user would call a mint operation on the dex with the address
      *         of the LP conduit they want to use. This method will be called to notify
      *         conduit contract (e.g. to perform tracking), and the LP position will be
@@ -22,7 +22,7 @@ interface ICrocLpConduit {
      * @param liq       The amount of liquidity being minted. If ambient liquidity this
      *                  is denominated as ambient seeds. If concentrated this is flat
      *                  sqrt(X*Y) liquidity of the liquidity minted.
-     * @param mileage   The accumulated fee mileage (see PositionRegistrar.sol) of the 
+     * @param mileage   The accumulated fee mileage (see PositionRegistrar.sol) of the
      *                  concentrated liquidity at mint time. If ambient, this is zero.
      *
      * @return   Return false if the conduit implementation does not accept the liquidity

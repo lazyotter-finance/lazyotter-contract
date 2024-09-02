@@ -49,7 +49,11 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
 
     /// @notice Emitted when a withdrawal is made.
     event Withdraw(
-        address indexed caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares
+        address indexed caller,
+        address indexed receiver,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
     );
 
     /// @notice Emitted when a harvest is performed.
@@ -63,9 +67,13 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
      * @param _feeInfo The initial fee information.
      * @param _keeper The address of the keeper.
      */
-    constructor(IERC20 _asset, string memory name, string memory symbol, FeeInfo memory _feeInfo, address _keeper)
-        ERC20(name, symbol)
-    {
+    constructor(
+        IERC20 _asset,
+        string memory name,
+        string memory symbol,
+        FeeInfo memory _feeInfo,
+        address _keeper
+    ) ERC20(name, symbol) {
         asset = _asset;
 
         // role
@@ -289,7 +297,7 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
         _burn(owner, shares);
         _withdraw(owner, assets);
         uint256 transferAssets = 0;
-        uint256 withdrawalFee = assets * feeInfo.withdrawalFeeRate / MAX_FEE_RATE;
+        uint256 withdrawalFee = (assets * feeInfo.withdrawalFeeRate) / MAX_FEE_RATE;
         if (withdrawalFee > 0) {
             uint256 length = recipients.length;
             for (uint256 i = 0; i < length; ++i) {
@@ -325,7 +333,7 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
         _burn(owner, shares);
         _withdraw(owner, assets);
         uint256 transferAssets = 0;
-        uint256 withdrawalFee = assets * feeInfo.withdrawalFeeRate / MAX_FEE_RATE;
+        uint256 withdrawalFee = (assets * feeInfo.withdrawalFeeRate) / MAX_FEE_RATE;
         if (withdrawalFee > 0) {
             uint256 length = recipients.length;
             for (uint256 i = 0; i < length; ++i) {
@@ -370,7 +378,7 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
         address[] memory recipients = feeInfo.recipients;
         uint256[] memory recipientWeights = feeInfo.recipientWeights;
         uint256 harvesterWeight = feeInfo.harvesterWeight;
-        uint256 harvestFee = harvestAssets * feeInfo.harvestFeeRate / MAX_FEE_RATE;
+        uint256 harvestFee = (harvestAssets * feeInfo.harvestFeeRate) / MAX_FEE_RATE;
         uint256 transferAssets = 0;
         if (harvestFee > 0) {
             uint256 length = recipients.length;
@@ -485,11 +493,11 @@ contract Vault is ERC20, ReentrancyGuard, AccessControl, Pausable {
      * @return bool Indicates if the transaction was successful.
      * @return bytes The result of the transaction.
      */
-    function execute(address _to, uint256 _value, bytes calldata _data)
-        external
-        onlyOwner
-        returns (bool, bytes memory)
-    {
+    function execute(
+        address _to,
+        uint256 _value,
+        bytes calldata _data
+    ) external onlyOwner returns (bool, bytes memory) {
         (bool success, bytes memory result) = _to.call{value: _value}(_data);
         return (success, result);
     }

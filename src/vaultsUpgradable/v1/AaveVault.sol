@@ -56,7 +56,7 @@ contract AaveVault is Vault {
         IERC20 asset = IERC20(asset());
 
         uint256 assets = asset.balanceOf(address(this));
-        (uint256 depositedAssets,,,,,,,,) = $.dataProvider.getUserReserveData(address(asset), address(this));
+        (uint256 depositedAssets, , , , , , , , ) = $.dataProvider.getUserReserveData(address(asset), address(this));
         return assets + depositedAssets;
     }
 

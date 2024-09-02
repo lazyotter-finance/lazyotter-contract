@@ -69,7 +69,7 @@ contract AaveVault is Vault {
         dataProvider = _dataProvider;
         rewardsController = _rewardsController;
 
-        (address aTokenAddress,,) = dataProvider.getReserveTokensAddresses(address(asset));
+        (address aTokenAddress, , ) = dataProvider.getReserveTokensAddresses(address(asset));
         aToken = IERC20(aTokenAddress);
         native = IERC20(_native);
 
@@ -83,7 +83,7 @@ contract AaveVault is Vault {
      */
     function totalAssets() public view override returns (uint256) {
         uint256 assets = asset.balanceOf(address(this));
-        (uint256 depositedAssets,,,,,,,,) = dataProvider.getUserReserveData(address(asset), address(this));
+        (uint256 depositedAssets, , , , , , , , ) = dataProvider.getUserReserveData(address(asset), address(this));
         return assets + depositedAssets;
     }
 

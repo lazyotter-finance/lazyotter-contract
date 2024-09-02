@@ -6,7 +6,11 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 interface IVault is IERC20 {
     event Deposit(address indexed caller, address indexed owner, uint256 assets, uint256 shares);
     event Withdraw(
-        address indexed caller, address indexed receiver, address indexed owner, uint256 assets, uint256 shares
+        address indexed caller,
+        address indexed receiver,
+        address indexed owner,
+        uint256 assets,
+        uint256 shares
     );
 
     function asset() external returns (IERC20);
@@ -45,8 +49,15 @@ interface IVault is IERC20 {
 
     function subscriber() external returns (address);
 
-    function permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
-        external;
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
 
     function baseToken() external view returns (address);
 
