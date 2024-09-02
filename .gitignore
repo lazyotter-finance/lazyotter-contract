@@ -3,6 +3,7 @@
 .bak
 .env
 node_modules/
+.gitlab-ci.yml
 
 # Compiler files
 cache/
