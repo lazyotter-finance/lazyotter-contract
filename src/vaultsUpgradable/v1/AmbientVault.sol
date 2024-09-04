@@ -36,11 +36,12 @@ contract AmbientVault is Vault {
         _disableInitializers();
     }
 
-    function initialize(IERC20 asset_, string memory name_, string memory symbol_, address keeper_)
-        public
-        override
-        initializer
-    {
+    function initialize(
+        IERC20 asset_,
+        string memory name_,
+        string memory symbol_,
+        address keeper_
+    ) public override initializer {
         super.initialize(asset_, name_, symbol_, keeper_);
 
         AmbientVaultStorage storage $ = _getAmbientVaultStorage();

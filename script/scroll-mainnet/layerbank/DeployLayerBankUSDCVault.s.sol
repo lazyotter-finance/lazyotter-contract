@@ -38,7 +38,15 @@ contract Deploy is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         LayerBankVault layerBankVault = new LayerBankVault(
-            USDC, "LazyOtter: Vault LayerBank USDC", "LOT", feeInfo, keeper, core, iUSDC, address(WETH), WETH
+            USDC,
+            "LazyOtter: Vault LayerBank USDC",
+            "LOT",
+            feeInfo,
+            keeper,
+            core,
+            iUSDC,
+            address(WETH),
+            WETH
         );
 
         vm.stopBroadcast();

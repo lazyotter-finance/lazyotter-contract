@@ -34,8 +34,14 @@ contract Deploy is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        RhoMarketsVault rhoMarketsVault =
-            new RhoMarketsVault(USDC, "LazyOtter: Vault RhoMarkets USDC", "LOT", feeInfo, keeper, RUSDC);
+        RhoMarketsVault rhoMarketsVault = new RhoMarketsVault(
+            USDC,
+            "LazyOtter: Vault RhoMarkets USDC",
+            "LOT",
+            feeInfo,
+            keeper,
+            RUSDC
+        );
 
         vm.stopBroadcast();
 

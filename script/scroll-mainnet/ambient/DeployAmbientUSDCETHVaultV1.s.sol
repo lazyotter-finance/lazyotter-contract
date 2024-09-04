@@ -39,7 +39,8 @@ contract Deploy is Script {
 
         // Prepare initialization data for the vault
         bytes memory initData = abi.encodeCall(
-            AmbientVault.initialize, (IERC20(address(crocLpErc20)), "LazyOtter: Vault Ambient ETH USDC", "LOT", keeper)
+            AmbientVault.initialize,
+            (IERC20(address(crocLpErc20)), "LazyOtter: Vault Ambient ETH USDC", "LOT", keeper)
         );
 
         // Deploy the BeaconProxy
