@@ -5,12 +5,13 @@ pragma solidity ^0.8.24;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Script.sol";
-import {ScrollMainnet} from "../../config/AddressBook.sol";
+import {ScrollMainnet} from "../../../config/AddressBook.sol";
 
-import {IRErc20Delegator} from "../../src/interfaces/rhoMarkets/IRErc20Delegator.sol";
+import {ICore} from "../../../src/interfaces/layerbank/ICore.sol";
+import {IToken} from "../../../src/interfaces/layerbank/IToken.sol";
 
-import {RhoMarketsVault} from "../../src/vaults/RhoMarketsVault.sol";
-import {Vault} from "../../src/vaults/Vault.sol";
+import {LayerBankVault} from "../../../src/vaults/LayerBankVault.sol";
+import {Vault} from "../../../src/vaults/Vault.sol";
 
 contract Deploy is Script {
     // TODO: set treasury, keeper addresses
@@ -18,8 +19,10 @@ contract Deploy is Script {
     address keeper = ScrollMainnet.KEEPER;
 
     IERC20 USDC = IERC20(ScrollMainnet.USDC);
+    IERC20 WETH = IERC20(ScrollMainnet.WETH);
 
-    IRErc20Delegator public RUSDC = IRErc20Delegator(ScrollMainnet.RHO_MARKETS_USDC);
+    ICore core = ICore(ScrollMainnet.LAYERBANK_CORE);
+    IToken iUSDC = IToken(ScrollMainnet.LAYERBANK_IUSDC);
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -34,17 +37,12 @@ contract Deploy is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        RhoMarketsVault rhoMarketsVault = new RhoMarketsVault(
-            USDC,
-            "LazyOtter: Vault RhoMarkets USDC",
-            "LOT",
-            feeInfo,
-            keeper,
-            RUSDC
+        LayerBankVault layerBankVault = new LayerBankVault(
+            USDC, "LazyOtter: Vault LayerBank USDC", "LOT", feeInfo, keeper, core, iUSDC, address(WETH), WETH
         );
 
         vm.stopBroadcast();
 
-        console2.log("SCROLL_RHOMARKETS_USDC_VAULT=%s", address(rhoMarketsVault));
+        console2.log("SCROLL_LAYERBANK_USDC_VAULT=%s", address(layerBankVault));
     }
 }

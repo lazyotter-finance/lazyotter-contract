@@ -39,12 +39,10 @@ interface IPool {
     // [Recommended] This is the latest interface.
     /// @dev Returns the swap fee of the pool.
     /// This function will forward calls to the pool master.
-    function getSwapFee(
-        address sender,
-        address tokenIn,
-        address tokenOut,
-        bytes calldata data
-    ) external view returns (uint24 swapFee);
+    function getSwapFee(address sender, address tokenIn, address tokenOut, bytes calldata data)
+        external
+        view
+        returns (uint24 swapFee);
 
     /// @dev Returns the protocol fee of the pool.
     function getProtocolFee() external view returns (uint24 protocolFee);
@@ -56,12 +54,9 @@ interface IPool {
     //function mint(bytes calldata data) external returns (uint liquidity);
 
     /// @dev Mints liquidity.
-    function mint(
-        bytes calldata data,
-        address sender,
-        address callback,
-        bytes calldata callbackData
-    ) external returns (uint256 liquidity);
+    function mint(bytes calldata data, address sender, address callback, bytes calldata callbackData)
+        external
+        returns (uint256 liquidity);
 
     // [Deprecated] The old interface for Era testnet.
     /// @dev Burns liquidity.
@@ -70,12 +65,9 @@ interface IPool {
     //function burn(bytes calldata data) external returns (TokenAmount[] memory amounts);
 
     /// @dev Burns liquidity.
-    function burn(
-        bytes calldata data,
-        address sender,
-        address callback,
-        bytes calldata callbackData
-    ) external returns (TokenAmount[] memory tokenAmounts);
+    function burn(bytes calldata data, address sender, address callback, bytes calldata callbackData)
+        external
+        returns (TokenAmount[] memory tokenAmounts);
 
     // [Deprecated] The old interface for Era testnet.
     /// @dev Burns liquidity with single output token.
@@ -84,12 +76,9 @@ interface IPool {
     //function burnSingle(bytes calldata data) external returns (uint amountOut);
 
     /// @dev Burns liquidity with single output token.
-    function burnSingle(
-        bytes calldata data,
-        address sender,
-        address callback,
-        bytes calldata callbackData
-    ) external returns (TokenAmount memory tokenAmount);
+    function burnSingle(bytes calldata data, address sender, address callback, bytes calldata callbackData)
+        external
+        returns (TokenAmount memory tokenAmount);
 
     // [Deprecated] The old interface for Era testnet.
     /// @dev Swaps between tokens.
@@ -98,10 +87,7 @@ interface IPool {
     //function swap(bytes calldata data) external returns (uint amountOut);
 
     /// @dev Swaps between tokens.
-    function swap(
-        bytes calldata data,
-        address sender,
-        address callback,
-        bytes calldata callbackData
-    ) external returns (TokenAmount memory tokenAmount);
+    function swap(bytes calldata data, address sender, address callback, bytes calldata callbackData)
+        external
+        returns (TokenAmount memory tokenAmount);
 }

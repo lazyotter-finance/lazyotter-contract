@@ -59,13 +59,8 @@ contract SyncSwapVaultTest is Test {
         SyncSwapVaultHelper.TokenInput[] memory inputs = new SyncSwapVaultHelper.TokenInput[](1);
         inputs[0] = SyncSwapVaultHelper.TokenInput(address(0), amount);
 
-        uint256 shares = vaultHelper.deposit{value: amount}(
-            inputs,
-            0,
-            block.timestamp + 180,
-            address(vault),
-            address(this)
-        );
+        uint256 shares =
+            vaultHelper.deposit{value: amount}(inputs, 0, block.timestamp + 180, address(vault), address(this));
 
         assertEq(shares, vault.balanceOf(address(this)));
     }
@@ -81,13 +76,8 @@ contract SyncSwapVaultTest is Test {
         inputs[0] = SyncSwapVaultHelper.TokenInput(address(0), amount);
         inputs[1] = SyncSwapVaultHelper.TokenInput(address(USDC), usdcAmount);
 
-        uint256 shares = vaultHelper.deposit{value: amount}(
-            inputs,
-            0,
-            block.timestamp + 180,
-            address(vault),
-            address(this)
-        );
+        uint256 shares =
+            vaultHelper.deposit{value: amount}(inputs, 0, block.timestamp + 180, address(vault), address(this));
 
         assertEq(shares, vault.balanceOf(address(this)));
     }
@@ -103,13 +93,8 @@ contract SyncSwapVaultTest is Test {
         inputs[0] = SyncSwapVaultHelper.TokenInput(address(USDC), usdcAmount);
         inputs[1] = SyncSwapVaultHelper.TokenInput(address(0), amount);
 
-        uint256 shares = vaultHelper.deposit{value: amount}(
-            inputs,
-            0,
-            block.timestamp + 180,
-            address(vault),
-            address(this)
-        );
+        uint256 shares =
+            vaultHelper.deposit{value: amount}(inputs, 0, block.timestamp + 180, address(vault), address(this));
 
         assertEq(shares, vault.balanceOf(address(this)));
     }
@@ -137,13 +122,8 @@ contract SyncSwapVaultTest is Test {
         SyncSwapVaultHelper.TokenInput[] memory inputs = new SyncSwapVaultHelper.TokenInput[](1);
         inputs[0] = SyncSwapVaultHelper.TokenInput(address(0), amount);
 
-        uint256 shares = vaultHelper.deposit{value: amount}(
-            inputs,
-            0,
-            block.timestamp + 180,
-            address(vault),
-            address(this)
-        );
+        uint256 shares =
+            vaultHelper.deposit{value: amount}(inputs, 0, block.timestamp + 180, address(vault), address(this));
         uint256 afterDepositBalance = address(this).balance;
 
         // input WETH address to redeem ETH
@@ -178,13 +158,8 @@ contract SyncSwapVaultTest is Test {
         SyncSwapVaultHelper.TokenInput[] memory inputs = new SyncSwapVaultHelper.TokenInput[](1);
         inputs[0] = SyncSwapVaultHelper.TokenInput(address(0), amount);
 
-        uint256 shares = vaultHelper.deposit{value: amount}(
-            inputs,
-            0,
-            block.timestamp + 180,
-            address(vault),
-            address(this)
-        );
+        uint256 shares =
+            vaultHelper.deposit{value: amount}(inputs, 0, block.timestamp + 180, address(vault), address(this));
         uint256 assets = vault.previewRedeem(shares);
         uint256 afterDepositBalance = address(this).balance;
 
@@ -202,13 +177,8 @@ contract SyncSwapVaultTest is Test {
         SyncSwapVaultHelper.TokenInput[] memory inputs = new SyncSwapVaultHelper.TokenInput[](1);
         inputs[0] = SyncSwapVaultHelper.TokenInput(address(0), amount);
 
-        uint256 shares = vaultHelper.deposit{value: amount}(
-            inputs,
-            0,
-            block.timestamp + 180,
-            address(vault),
-            address(this)
-        );
+        uint256 shares =
+            vaultHelper.deposit{value: amount}(inputs, 0, block.timestamp + 180, address(vault), address(this));
         uint256 assets = vault.previewRedeem(shares);
         uint256 afterDepositBalance = address(this).balance;
 

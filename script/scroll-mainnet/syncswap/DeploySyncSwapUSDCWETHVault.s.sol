@@ -5,11 +5,11 @@ pragma solidity ^0.8.24;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/Script.sol";
-import {ScrollMainnet} from "../../config/AddressBook.sol";
+import {ScrollMainnet} from "../../../config/AddressBook.sol";
 
-import {SyncSwapVaultHelper} from "../../src/helper/SyncSwapVaultHelper.sol";
-import {SyncSwapVault} from "../../src/vaults/SyncSwapVault.sol";
-import {Vault} from "../../src/vaults/Vault.sol";
+import {SyncSwapVaultHelper} from "../../../src/helper/SyncSwapVaultHelper.sol";
+import {SyncSwapVault} from "../../../src/vaults/SyncSwapVault.sol";
+import {Vault} from "../../../src/vaults/Vault.sol";
 
 contract Deploy is Script {
     // TODO: set treasury, keeper addresses
@@ -31,13 +31,8 @@ contract Deploy is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        SyncSwapVault syncSwapVault = new SyncSwapVault(
-            SYNCSWAP_USDC_WETH_LP,
-            "LazyOtter: Vault SYNCSWAP USDC WETH",
-            "LOT",
-            feeInfo,
-            keeper
-        );
+        SyncSwapVault syncSwapVault =
+            new SyncSwapVault(SYNCSWAP_USDC_WETH_LP, "LazyOtter: Vault SYNCSWAP USDC WETH", "LOT", feeInfo, keeper);
 
         vm.stopBroadcast();
 

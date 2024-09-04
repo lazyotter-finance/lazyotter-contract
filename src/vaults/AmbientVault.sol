@@ -19,13 +19,9 @@ contract AmbientVault is Vault {
     address public immutable baseToken;
     address public immutable quoteToken;
 
-    constructor(
-        IERC20 _asset,
-        string memory _name,
-        string memory _symbol,
-        FeeInfo memory _feeInfo,
-        address _keeper
-    ) Vault(_asset, _name, _symbol, _feeInfo, _keeper) {
+    constructor(IERC20 _asset, string memory _name, string memory _symbol, FeeInfo memory _feeInfo, address _keeper)
+        Vault(_asset, _name, _symbol, _feeInfo, _keeper)
+    {
         baseToken = ICrocLpConduit(address(_asset)).baseToken();
         quoteToken = ICrocLpConduit(address(_asset)).quoteToken();
     }

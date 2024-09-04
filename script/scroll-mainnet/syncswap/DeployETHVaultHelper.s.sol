@@ -2,9 +2,9 @@
 pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
-import {ScrollMainnet} from "../../config/AddressBook.sol";
+import {ScrollMainnet} from "../../../config/AddressBook.sol";
 
-import {ETHVaultHelper} from "../../src/helper/ETHVaultHelper.sol";
+import {ETHVaultHelper} from "../../../src/helper/ETHVaultHelper.sol";
 
 contract Deploy is Script {
     function run() external {

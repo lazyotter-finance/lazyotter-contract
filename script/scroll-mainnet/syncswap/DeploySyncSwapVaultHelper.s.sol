@@ -2,10 +2,10 @@
 pragma solidity ^0.8.24;
 
 import "forge-std/Script.sol";
-import {ScrollMainnet} from "../../config/AddressBook.sol";
+import {ScrollMainnet} from "../../../config/AddressBook.sol";
 
-import {IRouter} from "../../src/interfaces/syncswap/IRouter.sol";
-import {SyncSwapVaultHelper} from "../../src/helper/SyncSwapVaultHelper.sol";
+import {IRouter} from "../../../src/interfaces/syncswap/IRouter.sol";
+import {SyncSwapVaultHelper} from "../../../src/helper/SyncSwapVaultHelper.sol";
 
 contract Deploy is Script {
     IRouter router = IRouter(ScrollMainnet.SYNCSWAP_ROUTER);
