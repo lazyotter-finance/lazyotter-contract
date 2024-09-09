@@ -19,6 +19,7 @@ contract AmbientVault is Vault {
         // if the pair is ETH/USDC, baseToken is ETH, quoteToken is USDC
         address baseToken;
         address quoteToken;
+        uint256 scaleFactor;
     }
 
     // keccak256(abi.encode(uint256(keccak256("ambientVaultStorage")) - 1)) & ~bytes32(uint256(0xff))
@@ -40,13 +41,15 @@ contract AmbientVault is Vault {
         IERC20 asset_,
         string memory name_,
         string memory symbol_,
-        address keeper_
-    ) public override initializer {
+        address keeper_,
+        uint256 scaleFactor_
+    ) public initializer {
         super.initialize(asset_, name_, symbol_, keeper_);
 
         AmbientVaultStorage storage $ = _getAmbientVaultStorage();
         $.baseToken = ICrocLpConduit(address(asset_)).baseToken();
         $.quoteToken = ICrocLpConduit(address(asset_)).quoteToken();
+        $.scaleFactor = scaleFactor_;
     }
 
     function baseToken() public view returns (address) {
@@ -55,5 +58,9 @@ contract AmbientVault is Vault {
 
     function quoteToken() public view returns (address) {
         return _getAmbientVaultStorage().quoteToken;
+    }
+
+    function scaleFactor() public view returns (uint256) {
+        return _getAmbientVaultStorage().scaleFactor;
     }
 }

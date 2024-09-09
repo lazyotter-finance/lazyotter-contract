@@ -37,8 +37,7 @@ contract AaveVaultTest is Test {
 
         // Prepare initialization data for the vault
         bytes memory initData = abi.encodeCall(
-            AaveVault.initialize,
-            (USDC, "Vault Token", "vUSDC", alice, dataProvider, lendingPool)
+            AaveVault.initialize, (USDC, "Vault Token", "vUSDC", alice, dataProvider, lendingPool)
         );
 
         // Deploy the BeaconProxy

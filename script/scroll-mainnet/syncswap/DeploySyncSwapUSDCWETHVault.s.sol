@@ -31,13 +31,8 @@ contract Deploy is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        SyncSwapVault syncSwapVault = new SyncSwapVault(
-            SYNCSWAP_USDC_WETH_LP,
-            "LazyOtter: Vault SYNCSWAP USDC WETH",
-            "LOT",
-            feeInfo,
-            keeper
-        );
+        SyncSwapVault syncSwapVault =
+            new SyncSwapVault(SYNCSWAP_USDC_WETH_LP, "LazyOtter: Vault SYNCSWAP USDC WETH", "LOT", feeInfo, keeper);
 
         vm.stopBroadcast();
 

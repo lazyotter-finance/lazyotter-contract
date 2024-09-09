@@ -49,12 +49,8 @@ interface IComptroller {
     function claimReward() external;
     function claimReward(address holder) external;
     function claimReward(address holder, address[] calldata rTokens) external;
-    function claimReward(
-        address[] calldata holders,
-        address[] calldata rTokens,
-        bool borrowers,
-        bool suppliers
-    ) external;
+    function claimReward(address[] calldata holders, address[] calldata rTokens, bool borrowers, bool suppliers)
+        external;
     function closeFactorMantissa() external view returns (uint256);
     function comptrollerImplementation() external view returns (address);
     function enterAllMarkets(address account) external returns (uint256[] memory);
@@ -81,11 +77,10 @@ interface IComptroller {
         address borrower,
         uint256 repayAmount
     ) external view returns (uint256);
-    function liquidateCalculateSeizeTokens(
-        address rTokenBorrowed,
-        address rTokenCollateral,
-        uint256 actualRepayAmount
-    ) external view returns (uint256, uint256);
+    function liquidateCalculateSeizeTokens(address rTokenBorrowed, address rTokenCollateral, uint256 actualRepayAmount)
+        external
+        view
+        returns (uint256, uint256);
     function liquidationIncentiveMantissa() external view returns (uint256);
     function liquidatorWhiteList(address) external view returns (bool);
     function markets(address) external view returns (bool isListed, uint256 collateralFactorMantissa);
@@ -98,12 +93,9 @@ interface IComptroller {
     function protocalProtectedAccount(address) external view returns (bool);
     function redeemAllowed(address rToken, address redeemer, uint256 redeemTokens) external returns (uint256);
     function redeemVerify(address rToken, address redeemer, uint256 redeemAmount, uint256 redeemTokens) external pure;
-    function repayBorrowAllowed(
-        address rToken,
-        address payer,
-        address borrower,
-        uint256 repayAmount
-    ) external returns (uint256);
+    function repayBorrowAllowed(address rToken, address payer, address borrower, uint256 repayAmount)
+        external
+        returns (uint256);
     function rewardDistributor() external view returns (address);
     function seizeAllowed(
         address rTokenCollateral,
@@ -115,12 +107,9 @@ interface IComptroller {
     function seizeGuardianPaused() external view returns (bool);
     function supplyCapGuardian() external view returns (address);
     function supplyCaps(address) external view returns (uint256);
-    function transferAllowed(
-        address rToken,
-        address src,
-        address dst,
-        uint256 transferTokens
-    ) external returns (uint256);
+    function transferAllowed(address rToken, address src, address dst, uint256 transferTokens)
+        external
+        returns (uint256);
     function transferGuardianPaused() external view returns (bool);
     function triggerLiquidation(bool state) external;
     function updateLiquidateWhiteList(address user, bool state) external;

@@ -38,15 +38,7 @@ contract Deploy is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         LayerBankVault layerBankVault = new LayerBankVault(
-            wstETH,
-            "LazyOtter: Vault LayerBank wstETH",
-            "LOT",
-            feeInfo,
-            keeper,
-            core,
-            iWSTETH,
-            address(WETH),
-            WETH
+            wstETH, "LazyOtter: Vault LayerBank wstETH", "LOT", feeInfo, keeper, core, iWSTETH, address(WETH), WETH
         );
 
         vm.stopBroadcast();

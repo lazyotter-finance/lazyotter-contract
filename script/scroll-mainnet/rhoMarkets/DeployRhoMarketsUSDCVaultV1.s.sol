@@ -7,11 +7,9 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "forge-std/Script.sol";
 import {ScrollMainnet} from "../../../config/AddressBook.sol";
 
-import {ICrocSwapDex} from "../../../src/interfaces/ambient/ICrocSwapDex.sol";
+import {IRErc20Delegator} from "../../../src/interfaces/rhoMarkets/IRErc20Delegator.sol";
 
-import {AmbientVaultHelper} from "../../../src/helper/AmbientVaultHelper.sol";
-import {AmbientVault} from "../../../src/vaultsUpgradable/v1/AmbientVault.sol";
-import {CrocLpErc20} from "../../../src/utils/CrocLpErc20.sol";
+import {RhoMarketsVault} from "../../../src/vaultsUpgradable/v1/RhoMarketsVault.sol";
 import {Beacon} from "../../../src/vaultsUpgradable/Beacon.sol";
 import {Proxy} from "../../../src/vaultsUpgradable/Proxy.sol";
 
@@ -20,36 +18,31 @@ contract Deploy is Script {
     address treasury = ScrollMainnet.LO_TREASURY;
     address keeper = ScrollMainnet.KEEPER;
 
-    ICrocSwapDex crocSwapDex = ICrocSwapDex(ScrollMainnet.AMBIENT_SWAPDEX);
     IERC20 USDC = IERC20(ScrollMainnet.USDC);
-    IERC20 ETH = IERC20(address(0));
+
+    IRErc20Delegator public RUSDC = IRErc20Delegator(ScrollMainnet.RHO_MARKETS_USDC);
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
         vm.startBroadcast(deployerPrivateKey);
 
-        CrocLpErc20 crocLpErc20 = new CrocLpErc20(crocSwapDex, address(ETH), address(USDC), 420);
-
         // Deploy the implementation contract
-        AmbientVault vaultImplementation = new AmbientVault();
+        RhoMarketsVault vaultImplementation = new RhoMarketsVault();
 
         // Deploy the UpgradeableBeacon
         Beacon beacon = new Beacon(address(vaultImplementation));
 
         // Prepare initialization data for the vault
-        bytes memory initData = abi.encodeCall(
-            AmbientVault.initialize,
-            (IERC20(address(crocLpErc20)), "LazyOtter: Vault Ambient ETH USDC", "LOT", keeper, 1_000)
-        );
+        bytes memory initData = abi.encodeCall(RhoMarketsVault.initialize, (USDC, "LazyOtter: Vault RhoMarkets USDC", "LOT", keeper, RUSDC));
 
         // Deploy the BeaconProxy
         Proxy proxy = new Proxy(address(beacon), initData);
 
         vm.stopBroadcast();
 
-        console2.log("SCROLL_AMBIENT_BEACON=%s", address(beacon));
-        console2.log("SCROLL_AMBIENT_USDC_ETH_VAULT_PROXY=%s", address(proxy));
-        console2.log("SCROLL_AMBIENT_USDC_ETH_VAULT_IMPLEMENTATION=%s", address(vaultImplementation));
+        console2.log("SCROLL_RHOMARKETS_BEACON=%s", address(beacon));
+        console2.log("SCROLL_RHOMARKETS_USDC_VAULT_PROXY=%s", address(proxy));
+        console2.log("SCROLL_RHOMARKETS_USDC_VAULT_IMPLEMENTATION=%s", address(vaultImplementation));
     }
 }
