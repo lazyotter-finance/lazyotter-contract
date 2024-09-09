@@ -19,7 +19,11 @@ contract SyncSwapVault is Vault {
      * @param _feeInfo The initial fee information.
      * @param _keeper The address of the keeper.
      */
-    constructor(IERC20 _asset, string memory _name, string memory _symbol, FeeInfo memory _feeInfo, address _keeper)
-        Vault(_asset, _name, _symbol, _feeInfo, _keeper)
-    {}
+    constructor(
+        IERC20 _asset,
+        string memory _name,
+        string memory _symbol,
+        FeeInfo memory _feeInfo,
+        address _keeper
+    ) Vault(_asset, _name, _symbol, _feeInfo, _keeper) {}
 }

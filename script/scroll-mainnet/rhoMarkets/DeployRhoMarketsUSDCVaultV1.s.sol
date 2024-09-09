@@ -34,7 +34,10 @@ contract Deploy is Script {
         Beacon beacon = new Beacon(address(vaultImplementation));
 
         // Prepare initialization data for the vault
-        bytes memory initData = abi.encodeCall(RhoMarketsVault.initialize, (USDC, "LazyOtter: Vault RhoMarkets USDC", "LOT", keeper, RUSDC));
+        bytes memory initData = abi.encodeCall(
+            RhoMarketsVault.initialize,
+            (USDC, "LazyOtter: Vault RhoMarkets USDC", "LOT", keeper, RUSDC)
+        );
 
         // Deploy the BeaconProxy
         Proxy proxy = new Proxy(address(beacon), initData);

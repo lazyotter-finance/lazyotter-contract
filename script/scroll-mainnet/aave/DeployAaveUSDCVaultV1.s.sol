@@ -37,7 +37,8 @@ contract Deploy is Script {
 
         // Prepare initialization data for the vault
         bytes memory initData = abi.encodeCall(
-            AaveVault.initialize, (USDC, "LazyOtter: Vault Aave USDC", "LOT", keeper, dataProvider, lendingPool)
+            AaveVault.initialize,
+            (USDC, "LazyOtter: Vault Aave USDC", "LOT", keeper, dataProvider, lendingPool)
         );
 
         // Deploy the BeaconProxy

@@ -7,7 +7,11 @@ interface IRErc20Delegator {
     event Approval(address indexed owner, address indexed spender, uint256 amount);
     event Borrow(address borrower, uint256 borrowAmount, uint256 accountBorrows, uint256 totalBorrows);
     event LiquidateBorrow(
-        address liquidator, address borrower, uint256 repayAmount, address rTokenCollateral, uint256 seizeTokens
+        address liquidator,
+        address borrower,
+        uint256 repayAmount,
+        address rTokenCollateral,
+        uint256 seizeTokens
     );
     event Mint(address minter, uint256 mintAmount, uint256 mintTokens);
     event NewAdmin(address oldAdmin, address newAdmin);
@@ -20,7 +24,11 @@ interface IRErc20Delegator {
     event NewReserveFactor(uint256 oldReserveFactorMantissa, uint256 newReserveFactorMantissa);
     event Redeem(address redeemer, uint256 redeemAmount, uint256 redeemTokens);
     event RepayBorrow(
-        address payer, address borrower, uint256 repayAmount, uint256 accountBorrows, uint256 totalBorrows
+        address payer,
+        address borrower,
+        uint256 repayAmount,
+        uint256 accountBorrows,
+        uint256 totalBorrows
     );
     event ReservesAdded(address benefactor, uint256 addAmount, uint256 newTotalReserves);
     event ReservesReduced(address admin, uint256 reduceAmount, uint256 newTotalReserves);
@@ -31,8 +39,11 @@ interface IRErc20Delegator {
     function _addReserves(uint256 addAmount) external returns (uint256);
     function _reduceReserves(uint256 reduceAmount) external returns (uint256);
     function _setComptroller(address newComptroller) external returns (uint256);
-    function _setImplementation(address implementation_, bool allowResign, bytes calldata becomeImplementationData)
-        external;
+    function _setImplementation(
+        address implementation_,
+        bool allowResign,
+        bytes calldata becomeImplementationData
+    ) external;
     function _setInterestRateModel(address newInterestRateModel) external returns (uint256);
     function _setPendingAdmin(address newPendingAdmin) external returns (uint256);
     function _setProtocolSeizeShare(uint256 newProtocolSeizeShareMantissa) external returns (uint256);
@@ -63,13 +74,19 @@ interface IRErc20Delegator {
     function interestRateModel() external view returns (address);
     function isEthDerivative() external view returns (bool);
     function isRToken() external view returns (bool);
-    function liquidateBorrow(address borrower, uint256 repayAmount, address rTokenCollateral)
-        external
-        returns (uint256);
+    function liquidateBorrow(
+        address borrower,
+        uint256 repayAmount,
+        address rTokenCollateral
+    ) external returns (uint256);
     function mint(uint256 mintAmount) external returns (uint256);
-    function mintWithPermit(uint256 mintAmount, uint256 deadline, uint8 v, bytes32 r, bytes32 s)
-        external
-        returns (uint256);
+    function mintWithPermit(
+        uint256 mintAmount,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external returns (uint256);
     function name() external view returns (string memory);
     function pendingAdmin() external view returns (address payable);
     function protocolSeizeShareMantissa() external view returns (uint256);

@@ -38,35 +38,41 @@ contract Deploy is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // deploy RUSDT vault
-        bytes memory initData =
-            abi.encodeCall(RhoMarketsVault.initialize, (USDT, "LazyOtter: Vault RhoMarkets USDT", "LOT", keeper, RUSDT));
+        bytes memory initData = abi.encodeCall(
+            RhoMarketsVault.initialize,
+            (USDT, "LazyOtter: Vault RhoMarkets USDT", "LOT", keeper, RUSDT)
+        );
         Proxy proxy = new Proxy(address(beacon), initData);
         console2.log("SCROLL_RHOMARKETS_USDT_VAULT_PROXY=%s", address(proxy));
 
         // deploy RwstETH vault
         initData = abi.encodeCall(
-            RhoMarketsVault.initialize, (wstETH, "LazyOtter: Vault RhoMarkets wstETH", "LOT", keeper, RwstETH)
+            RhoMarketsVault.initialize,
+            (wstETH, "LazyOtter: Vault RhoMarkets wstETH", "LOT", keeper, RwstETH)
         );
         proxy = new Proxy(address(beacon), initData);
         console2.log("SCROLL_RHOMARKETS_WSTETH_VAULT_PROXY=%s", address(proxy));
 
         // deploy RweETH vault
         initData = abi.encodeCall(
-            RhoMarketsVault.initialize, (weETH, "LazyOtter: Vault RhoMarkets weETH", "LOT", keeper, RweETH)
+            RhoMarketsVault.initialize,
+            (weETH, "LazyOtter: Vault RhoMarkets weETH", "LOT", keeper, RweETH)
         );
         proxy = new Proxy(address(beacon), initData);
         console2.log("SCROLL_RHOMARKETS_WEETH_VAULT_PROXY=%s", address(proxy));
 
         // deploy RwrsETH vault
         initData = abi.encodeCall(
-            RhoMarketsVault.initialize, (wrsETH, "LazyOtter: Vault RhoMarkets wrsETH", "LOT", keeper, RwrsETH)
+            RhoMarketsVault.initialize,
+            (wrsETH, "LazyOtter: Vault RhoMarkets wrsETH", "LOT", keeper, RwrsETH)
         );
         proxy = new Proxy(address(beacon), initData);
         console2.log("SCROLL_RHOMARKETS_WRSETH_VAULT_PROXY=%s", address(proxy));
 
         // deploy RSTONE vault
         initData = abi.encodeCall(
-            RhoMarketsVault.initialize, (STONE, "LazyOtter: Vault RhoMarkets STONE", "LOT", keeper, RSTONE)
+            RhoMarketsVault.initialize,
+            (STONE, "LazyOtter: Vault RhoMarkets STONE", "LOT", keeper, RSTONE)
         );
         proxy = new Proxy(address(beacon), initData);
         console2.log("SCROLL_RHOMARKETS_STONE_VAULT_PROXY=%s", address(proxy));
