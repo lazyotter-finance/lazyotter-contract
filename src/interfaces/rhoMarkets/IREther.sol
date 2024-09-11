@@ -8,7 +8,11 @@ interface IREther {
     event Borrow(address borrower, uint256 borrowAmount, uint256 accountBorrows, uint256 totalBorrows);
     event Failure(uint256 error, uint256 info, uint256 detail);
     event LiquidateBorrow(
-        address liquidator, address borrower, uint256 repayAmount, address rTokenCollateral, uint256 seizeTokens
+        address liquidator,
+        address borrower,
+        uint256 repayAmount,
+        address rTokenCollateral,
+        uint256 seizeTokens
     );
     event Mint(address minter, uint256 mintAmount, uint256 mintTokens);
     event NewAdmin(address oldAdmin, address newAdmin);
@@ -20,7 +24,11 @@ interface IREther {
     event NewReserveFactor(uint256 oldReserveFactorMantissa, uint256 newReserveFactorMantissa);
     event Redeem(address redeemer, uint256 redeemAmount, uint256 redeemTokens);
     event RepayBorrow(
-        address payer, address borrower, uint256 repayAmount, uint256 accountBorrows, uint256 totalBorrows
+        address payer,
+        address borrower,
+        uint256 repayAmount,
+        uint256 accountBorrows,
+        uint256 totalBorrows
     );
     event ReservesAdded(address benefactor, uint256 addAmount, uint256 newTotalReserves);
     event ReservesReduced(address admin, uint256 reduceAmount, uint256 newTotalReserves);

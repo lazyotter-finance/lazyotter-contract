@@ -48,8 +48,10 @@ contract AmbientVaultTest is Test {
         beacon = new Beacon(address(vaultImplementation));
 
         // Prepare initialization data for the vault
-        bytes memory initData =
-            abi.encodeCall(AmbientVault.initialize, (IERC20(address(crocLpErc20)), "Vault Token", "vUSDTE", alice, 1));
+        bytes memory initData = abi.encodeCall(
+            AmbientVault.initialize,
+            (IERC20(address(crocLpErc20)), "Vault Token", "vUSDTE", alice, 1)
+        );
 
         // Deploy the BeaconProxy
         proxy = new Proxy(address(beacon), initData);
@@ -69,7 +71,7 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDT), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -88,7 +90,7 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDC), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -113,7 +115,7 @@ contract AmbientVaultTest is Test {
         inputs[1] = AmbientVaultHelper.TokenInput(address(USDT), USDTAmount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -139,7 +141,7 @@ contract AmbientVaultTest is Test {
         inputs[1] = AmbientVaultHelper.TokenInput(address(USDC), USDCAmount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -160,7 +162,7 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDT), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -168,8 +170,12 @@ contract AmbientVaultTest is Test {
         uint256 shares = vaultHelper.deposit(inputs, limitPrice, minOut, address(vault), address(this));
 
         vault.approve(address(vaultHelper), shares);
-        (uint256 quoteTokenAmount, uint256 baseTokenAmount) =
-            vaultHelper.redeem(limitPrice, address(vault), shares, address(this));
+        (uint256 quoteTokenAmount, uint256 baseTokenAmount) = vaultHelper.redeem(
+            limitPrice,
+            address(vault),
+            shares,
+            address(this)
+        );
 
         assertLe(crocLpErc20.balanceOf(address(vaultHelper)), 1);
         assertEq(vault.balanceOf(address(this)), 0);
@@ -186,11 +192,14 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDC), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
-        AmbientVaultHelper.RemoveLiquidityParams memory params = AmbientVaultHelper.RemoveLiquidityParams(false, minOut);
+        AmbientVaultHelper.RemoveLiquidityParams memory params = AmbientVaultHelper.RemoveLiquidityParams(
+            false,
+            minOut
+        );
 
         uint256 shares = vaultHelper.deposit(inputs, limitPrice, minOut, address(vault), address(this));
 
@@ -211,7 +220,7 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDC), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -238,7 +247,7 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDT), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -246,13 +255,17 @@ contract AmbientVaultTest is Test {
         uint256 shares = vaultHelper.deposit(inputs, limitPrice, minOut, address(vault), address(this));
         uint256 assets = vaultHelper.previewRedeem(address(vault), shares);
 
-        (uint256 quoteTokenAmountByAsset,) = vaultHelper.previewAmountByAsset(address(vault), assets);
-        (uint256 quoteTokenAmountByShare,) = vaultHelper.previewAmountByShare(address(vault), shares);
+        (uint256 quoteTokenAmountByAsset, ) = vaultHelper.previewAmountByAsset(address(vault), assets);
+        (uint256 quoteTokenAmountByShare, ) = vaultHelper.previewAmountByShare(address(vault), shares);
         assertEq(quoteTokenAmountByAsset, quoteTokenAmountByShare);
 
         vault.approve(address(vaultHelper), shares);
-        (uint256 quoteTokenAmount, uint256 baseTokenAmount) =
-            vaultHelper.withdraw(limitPrice, address(vault), assets, address(this));
+        (uint256 quoteTokenAmount, uint256 baseTokenAmount) = vaultHelper.withdraw(
+            limitPrice,
+            address(vault),
+            assets,
+            address(this)
+        );
 
         assertLe(crocLpErc20.balanceOf(address(vaultHelper)), 1);
         assertEq(vault.balanceOf(address(this)), 0);
@@ -270,7 +283,7 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDC), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;
@@ -278,7 +291,10 @@ contract AmbientVaultTest is Test {
         uint256 shares = vaultHelper.deposit{value: amount}(inputs, limitPrice, minOut, address(vault), address(this));
         uint256 assets = vaultHelper.previewRedeem(address(vault), shares);
 
-        AmbientVaultHelper.RemoveLiquidityParams memory params = AmbientVaultHelper.RemoveLiquidityParams(false, minOut);
+        AmbientVaultHelper.RemoveLiquidityParams memory params = AmbientVaultHelper.RemoveLiquidityParams(
+            false,
+            minOut
+        );
 
         vault.approve(address(vaultHelper), shares);
         uint256 receiveAmount = vaultHelper.withdrawSingle(limitPrice, params, address(vault), assets, address(this));
@@ -297,7 +313,7 @@ contract AmbientVaultTest is Test {
         inputs[0] = AmbientVaultHelper.TokenInput(address(USDC), amount);
 
         uint128 price = crocQuery.queryPrice(address(USDC), address(USDT), 420);
-        uint128 limit = price * 5 / 100;
+        uint128 limit = (price * 5) / 100;
         AmbientVaultHelper.LimitPrice memory limitPrice = AmbientVaultHelper.LimitPrice(price - limit, price + limit);
 
         uint128 minOut = 1;

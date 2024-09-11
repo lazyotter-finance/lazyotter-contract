@@ -36,8 +36,10 @@ contract RhoMarketsVaultTest is Test {
         beacon = new Beacon(address(vaultImplementation));
 
         // Prepare initialization data for the vault
-        bytes memory initData =
-            abi.encodeCall(RhoMarketsVault.initialize, (weETH, "Vault Token", "vweETH", alice, RweETH));
+        bytes memory initData = abi.encodeCall(
+            RhoMarketsVault.initialize,
+            (weETH, "Vault Token", "vweETH", alice, RweETH)
+        );
 
         // Deploy the BeaconProxy
         proxy = new Proxy(address(beacon), initData);

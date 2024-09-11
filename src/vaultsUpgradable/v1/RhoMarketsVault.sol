@@ -187,10 +187,13 @@ contract RhoMarketsVault is Vault {
         }
     }
 
-    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
-        internal
-        override
-    {
+    function _withdraw(
+        address caller,
+        address receiver,
+        address owner,
+        uint256 assets,
+        uint256 shares
+    ) internal override {
         IERC20 asset = IERC20(asset());
 
         _withdraw_(owner, assets);
