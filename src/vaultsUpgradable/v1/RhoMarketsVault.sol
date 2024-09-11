@@ -7,12 +7,15 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
+import {ERC4626Upgradeable} from "@openzeppelin-upgradeable/contracts/token/ERC20/extensions/ERC4626Upgradeable.sol";
 
 import {IComptroller} from "../../interfaces/rhoMarkets/IComptroller.sol";
 import {IRErc20Delegator} from "../../interfaces/rhoMarkets/IRErc20Delegator.sol";
 import {IInterestRateModel} from "../../interfaces/rhoMarkets/IInterestRateModel.sol";
 
 import {Vault} from "./Vault.sol";
+
+import "forge-std/console.sol";
 
 /// @title RhoMarketsVault
 /// @notice A vault contract for interacting with Rho Markets
@@ -182,5 +185,17 @@ contract RhoMarketsVault is Vault {
             uint256 err = RErc20.redeemUnderlying(shortAssets);
             require(err == 0, "RErc20.redeemUnderlying failed");
         }
+    }
+
+    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
+        internal
+        override
+    {
+        IERC20 asset = IERC20(asset());
+
+        _withdraw_(owner, assets);
+
+        uint256 realWithdrawAssets = asset.balanceOf(address(this));
+        ERC4626Upgradeable._withdraw(caller, receiver, owner, realWithdrawAssets, shares);
     }
 }

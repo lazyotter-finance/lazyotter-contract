@@ -63,4 +63,8 @@ contract AmbientVault is Vault {
     function scaleFactor() public view returns (uint256) {
         return _getAmbientVaultStorage().scaleFactor;
     }
+
+    function setScaleFactor(uint256 scaleFactor_) public onlyOwner {
+        _getAmbientVaultStorage().scaleFactor = scaleFactor_;
+    }
 }

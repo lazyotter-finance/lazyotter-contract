@@ -68,8 +68,8 @@ contract SyncSwapVaultHelper {
         convertedInputs = _normalizeIRouterTokenInput(pool, convertedInputs);
 
         // n * y > m * x
-        bool swap0To1 = convertedInputs[0].amount * IPool(pool).reserve1() >
-            convertedInputs[1].amount * IPool(pool).reserve0();
+        bool swap0To1 =
+            convertedInputs[0].amount * IPool(pool).reserve1() > convertedInputs[1].amount * IPool(pool).reserve0();
         uint24 swapFee = _getSwapFee(pool, swap0To1);
 
         uint256 deltaX;
@@ -112,12 +112,7 @@ contract SyncSwapVaultHelper {
         IERC20(convertedInputs[0].token).approve(address(router), convertedInputs[0].amount);
         IERC20(convertedInputs[1].token).approve(address(router), convertedInputs[1].amount);
         uint256 liquidity = router.addLiquidity2(
-            pool,
-            convertedInputs,
-            abi.encode(address(this)),
-            minLiquidity,
-            address(0),
-            abi.encode(0)
+            pool, convertedInputs, abi.encode(address(this)), minLiquidity, address(0), abi.encode(0)
         );
 
         // deposit LP token to vault
@@ -136,13 +131,10 @@ contract SyncSwapVaultHelper {
      * @param receiver The address to receive the tokens.
      * @return uint256 The amount of tokens received.
      */
-    function redeem(
-        address vault,
-        address tokenOut,
-        uint256 shares,
-        uint256 minAmount,
-        address receiver
-    ) external returns (uint256) {
+    function redeem(address vault, address tokenOut, uint256 shares, uint256 minAmount, address receiver)
+        external
+        returns (uint256)
+    {
         uint256 liquidity = IVault(vault).redeem(shares, address(this), msg.sender);
 
         address pool = address(IVault(vault).asset());
@@ -160,13 +152,10 @@ contract SyncSwapVaultHelper {
      * @param receiver The address to receive the tokens.
      * @return uint256 The amount of tokens received.
      */
-    function withdraw(
-        address vault,
-        address tokenOut,
-        uint256 assets,
-        uint256 minAmount,
-        address receiver
-    ) external returns (uint256) {
+    function withdraw(address vault, address tokenOut, uint256 assets, uint256 minAmount, address receiver)
+        external
+        returns (uint256)
+    {
         IVault(vault).withdraw(assets, address(this), msg.sender);
 
         // remove liquidity from SyncSwap
@@ -185,21 +174,13 @@ contract SyncSwapVaultHelper {
      * @param minAmount The minimum amount of tokens to be received.
      * @return uint256 The amount of tokens received.
      */
-    function _removeLiquidity(
-        address pool,
-        uint256 liquidity,
-        address tokenOut,
-        address receiver,
-        uint256 minAmount
-    ) private returns (uint256) {
+    function _removeLiquidity(address pool, uint256 liquidity, address tokenOut, address receiver, uint256 minAmount)
+        private
+        returns (uint256)
+    {
         IERC20(pool).approve(address(router), liquidity);
         IPool.TokenAmount memory amountOut = router.burnLiquiditySingle(
-            pool,
-            liquidity,
-            abi.encode(tokenOut, receiver, uint8(1)),
-            minAmount,
-            address(0),
-            abi.encode(0)
+            pool, liquidity, abi.encode(tokenOut, receiver, uint8(1)), minAmount, address(0), abi.encode(0)
         );
 
         return amountOut.amount;
@@ -213,12 +194,10 @@ contract SyncSwapVaultHelper {
      * @param deadline The transaction deadline.
      * @return IPool.TokenAmount The amount of tokens received after the swap.
      */
-    function _swap(
-        address pool,
-        address tokenIn,
-        uint256 amountIn,
-        uint256 deadline
-    ) private returns (IPool.TokenAmount memory) {
+    function _swap(address pool, address tokenIn, uint256 amountIn, uint256 deadline)
+        private
+        returns (IPool.TokenAmount memory)
+    {
         IRouter.SwapStep[] memory steps = new IRouter.SwapStep[](1);
         steps[0] = IRouter.SwapStep({
             pool: pool,
@@ -257,10 +236,11 @@ contract SyncSwapVaultHelper {
      * @param inputs The token inputs.
      * @return IRouter.TokenInput[] The normalized token inputs.
      */
-    function _normalizeIRouterTokenInput(
-        address pool,
-        IRouter.TokenInput[] memory inputs
-    ) private view returns (IRouter.TokenInput[] memory) {
+    function _normalizeIRouterTokenInput(address pool, IRouter.TokenInput[] memory inputs)
+        private
+        view
+        returns (IRouter.TokenInput[] memory)
+    {
         IRouter.TokenInput[] memory normalizedInputs = new IRouter.TokenInput[](2);
         uint256 amount0 = 0;
         uint256 amount1 = 0;
@@ -292,10 +272,9 @@ contract SyncSwapVaultHelper {
      * @return uint24 The swap fee.
      */
     function _getSwapFee(address pool, bool swap0To1) private view returns (uint24) {
-        return
-            swap0To1
-                ? IPool(pool).getSwapFee(msg.sender, IPool(pool).token0(), IPool(pool).token1(), abi.encode(0))
-                : IPool(pool).getSwapFee(msg.sender, IPool(pool).token1(), IPool(pool).token0(), abi.encode(0));
+        return swap0To1
+            ? IPool(pool).getSwapFee(msg.sender, IPool(pool).token0(), IPool(pool).token1(), abi.encode(0))
+            : IPool(pool).getSwapFee(msg.sender, IPool(pool).token1(), IPool(pool).token0(), abi.encode(0));
     }
 
     /**
@@ -303,9 +282,11 @@ contract SyncSwapVaultHelper {
      * @param inputs The TokenInput array.
      * @return IRouter.TokenInput[] The converted IRouter.TokenInput array.
      */
-    function _convertToIRouterTokenInput(
-        TokenInput[] memory inputs
-    ) private pure returns (IRouter.TokenInput[] memory) {
+    function _convertToIRouterTokenInput(TokenInput[] memory inputs)
+        private
+        pure
+        returns (IRouter.TokenInput[] memory)
+    {
         IRouter.TokenInput[] memory convertedInputs = new IRouter.TokenInput[](inputs.length);
 
         for (uint256 i = 0; i < inputs.length; i++) {

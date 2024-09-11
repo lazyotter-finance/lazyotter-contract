@@ -28,12 +28,7 @@ contract RhoMarketsVaultTest is Test {
         vm.createSelectFork(vm.rpcUrl("scroll"), 7889975);
 
         vault = new RhoMarketsVault(
-            USDC,
-            "Vault Token",
-            "vUSDCE",
-            Vault.FeeInfo(new address[](0), new uint256[](0), 0, 0, 0),
-            alice,
-            RUSDC
+            USDC, "Vault Token", "vUSDCE", Vault.FeeInfo(new address[](0), new uint256[](0), 0, 0, 0), alice, RUSDC
         );
     }
 
