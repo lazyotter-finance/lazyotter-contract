@@ -187,18 +187,17 @@ contract RhoMarketsVault is Vault {
         }
     }
 
-    function _withdraw(
-        address caller,
-        address receiver,
-        address owner,
-        uint256 assets,
-        uint256 shares
-    ) internal override {
+    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
+        internal
+        override
+    {
         IERC20 asset = IERC20(asset());
 
+        uint256 balanceBefore = asset.balanceOf(address(this));
         _withdraw_(owner, assets);
+        uint256 balanceAfter = asset.balanceOf(address(this));
 
-        uint256 realWithdrawAssets = asset.balanceOf(address(this));
+        uint256 realWithdrawAssets = balanceAfter - balanceBefore;
         ERC4626Upgradeable._withdraw(caller, receiver, owner, realWithdrawAssets, shares);
     }
 }
