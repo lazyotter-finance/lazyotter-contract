@@ -54,11 +54,11 @@ contract AaveVault is Vault {
         IERC20 asset = IERC20(asset());
 
         uint256 assets = asset.balanceOf(address(this));
-        (uint256 depositedAssets, , , , , , , , ) = $.dataProvider.getUserReserveData(address(asset), address(this));
+        (uint256 depositedAssets,,,,,,,,) = $.dataProvider.getUserReserveData(address(asset), address(this));
         return assets + depositedAssets;
     }
 
-    function _deposit_(address, uint256) internal override {
+    function _deposit_(address, uint256) internal override returns (uint256) {
         AaveVaultStorage storage $ = _getAaveVaultStorage();
         IERC20 asset = IERC20(asset());
         uint256 currentAssets = asset.balanceOf(address(this));
@@ -69,7 +69,7 @@ contract AaveVault is Vault {
         }
     }
 
-    function _withdraw_(address, uint256 assets) internal override {
+    function _withdraw_(address, uint256 assets) internal override returns (uint256) {
         AaveVaultStorage storage $ = _getAaveVaultStorage();
         IERC20 asset = IERC20(asset());
         uint256 currentAssets = asset.balanceOf(address(this));

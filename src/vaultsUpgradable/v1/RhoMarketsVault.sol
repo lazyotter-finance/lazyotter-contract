@@ -158,7 +158,7 @@ contract RhoMarketsVault is Vault {
     /// @notice Handles the deposit operation
     /// _ The address of the depositor (unused in this implementation)
     /// _ The amount of assets to deposit (unused in this implementation)
-    function _deposit_(address, uint256) internal override {
+    function _deposit_(address, uint256) internal override returns (uint256) {
         RhoMarketsVaultStorage storage $ = _getRhoMarketsVaultStorage();
         IRErc20Delegator RErc20 = $.RErc20;
         IERC20 asset = IERC20(asset());
@@ -174,33 +174,33 @@ contract RhoMarketsVault is Vault {
     /// @notice Handles the withdrawal operation
     /// _ The address of the withdrawer (unused in this implementation)
     /// @param assets The amount of assets to withdraw
-    function _withdraw_(address, uint256 assets) internal override {
+    function _withdraw_(address, uint256 assets) internal override returns (uint256) {
         RhoMarketsVaultStorage storage $ = _getRhoMarketsVaultStorage();
         IRErc20Delegator RErc20 = $.RErc20;
         IERC20 asset = IERC20(asset());
 
+        uint256 realWithdrawAssets = assets;
         uint256 currentAssets = asset.balanceOf(address(this));
         if (assets > currentAssets) {
             uint256 shortAssets = assets - currentAssets;
+            uint256 balanceBefore = asset.balanceOf(address(this));
+
             uint256 err = RErc20.redeemUnderlying(shortAssets);
             require(err == 0, "RErc20.redeemUnderlying failed");
+
+            uint256 balanceAfter = asset.balanceOf(address(this));
+            realWithdrawAssets = balanceAfter - balanceBefore;
         }
+
+        return realWithdrawAssets;
     }
 
-    function _withdraw(
-        address caller,
-        address receiver,
-        address owner,
-        uint256 assets,
-        uint256 shares
-    ) internal override {
-        IERC20 asset = IERC20(asset());
+    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
+        internal
+        override
+    {
+        uint256 realWithdrawAssets = _withdraw_(owner, assets);
 
-        uint256 balanceBefore = asset.balanceOf(address(this));
-        _withdraw_(owner, assets);
-        uint256 balanceAfter = asset.balanceOf(address(this));
-
-        uint256 realWithdrawAssets = balanceAfter - balanceBefore;
         ERC4626Upgradeable._withdraw(caller, receiver, owner, realWithdrawAssets, shares);
     }
 }

@@ -36,12 +36,11 @@ contract Vault is
         _disableInitializers();
     }
 
-    function initialize(
-        IERC20 asset_,
-        string memory name_,
-        string memory symbol_,
-        address keeper_
-    ) public virtual initializer {
+    function initialize(IERC20 asset_, string memory name_, string memory symbol_, address keeper_)
+        public
+        virtual
+        initializer
+    {
         __ERC4626_init(asset_);
         __ERC20_init(name_, symbol_);
         __AccessControl_init();
@@ -129,25 +128,23 @@ contract Vault is
     }
 
     // Override the _withdraw function to add custom logic, will implement fee structure in the future version
-    function _withdraw(
-        address caller,
-        address receiver,
-        address owner,
-        uint256 assets,
-        uint256 shares
-    ) internal virtual override {
+    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
+        internal
+        virtual
+        override
+    {
         _withdraw_(owner, assets);
 
         super._withdraw(caller, receiver, owner, assets, shares);
     }
 
     // Custom logic for deposit to different protocol, child contract could override it
-    function _deposit_(address receiver, uint256 assets) internal virtual {
+    function _deposit_(address receiver, uint256 assets) internal virtual returns (uint256) {
         // add custom logic here
     }
 
     // Custom logic for withdraw from different protocol, child contract could override it
-    function _withdraw_(address owner, uint256 assets) internal virtual {
+    function _withdraw_(address owner, uint256 assets) internal virtual returns (uint256) {
         // add custom logic here
     }
 
@@ -155,11 +152,11 @@ contract Vault is
         _withdraw_(address(this), assets);
     }
 
-    function execute(
-        address to_,
-        uint256 value_,
-        bytes calldata data_
-    ) external onlyOwner returns (bool, bytes memory) {
+    function execute(address to_, uint256 value_, bytes calldata data_)
+        external
+        onlyOwner
+        returns (bool, bytes memory)
+    {
         (bool success, bytes memory result) = to_.call{value: value_}(data_);
         require(success, "execute failed");
 
