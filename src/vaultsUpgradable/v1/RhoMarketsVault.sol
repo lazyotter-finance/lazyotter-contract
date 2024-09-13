@@ -195,10 +195,13 @@ contract RhoMarketsVault is Vault {
         return realWithdrawAssets;
     }
 
-    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
-        internal
-        override
-    {
+    function _withdraw(
+        address caller,
+        address receiver,
+        address owner,
+        uint256 assets,
+        uint256 shares
+    ) internal override {
         uint256 realWithdrawAssets = _withdraw_(owner, assets);
 
         ERC4626Upgradeable._withdraw(caller, receiver, owner, realWithdrawAssets, shares);
