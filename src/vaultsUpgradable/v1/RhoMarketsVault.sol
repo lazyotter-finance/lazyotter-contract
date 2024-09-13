@@ -189,19 +189,16 @@ contract RhoMarketsVault is Vault {
             require(err == 0, "RErc20.redeemUnderlying failed");
 
             uint256 balanceAfter = asset.balanceOf(address(this));
-            realWithdrawAssets = balanceAfter - balanceBefore;
+            realWithdrawAssets = currentAssets + balanceAfter - balanceBefore;
         }
 
         return realWithdrawAssets;
     }
 
-    function _withdraw(
-        address caller,
-        address receiver,
-        address owner,
-        uint256 assets,
-        uint256 shares
-    ) internal override {
+    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
+        internal
+        override
+    {
         uint256 realWithdrawAssets = _withdraw_(owner, assets);
 
         ERC4626Upgradeable._withdraw(caller, receiver, owner, realWithdrawAssets, shares);
