@@ -21,7 +21,6 @@ contract RhoMarketsVaultTest is Test {
     IERC20 USDC = IERC20(ScrollMainnet.USDC);
 
     IRErc20Delegator public RUSDC = IRErc20Delegator(ScrollMainnet.RHO_MARKETS_USDC);
-    IREther public RWETH = IREther(ScrollMainnet.RHO_MARKETS_WETH);
 
     RhoMarketsVault public vault;
     Beacon public beacon;
@@ -37,16 +36,13 @@ contract RhoMarketsVaultTest is Test {
         beacon = new Beacon(address(vaultImplementation));
 
         // Prepare initialization data for the vault
-        bytes memory initData = abi.encodeCall(
-            RhoMarketsVault.initialize,
-            (USDC, "Vault Token", "vUSDC", alice, RUSDC)
-        );
+        bytes memory initData = abi.encodeCall(RhoMarketsVault.initialize, (USDC, "Vault Token", "vUSDC", alice, RUSDC));
 
         // Deploy the BeaconProxy
         proxy = new Proxy(address(beacon), initData);
 
         // Set the vault variable to point to the proxy
-        vault = RhoMarketsVault(address(proxy));
+        vault = RhoMarketsVault(payable(address(proxy)));
     }
 
     function testDeposit() public {

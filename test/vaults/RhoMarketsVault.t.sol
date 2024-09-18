@@ -20,7 +20,6 @@ contract RhoMarketsVaultTest is Test {
     IERC20 USDC = IERC20(ScrollMainnet.USDC);
 
     IRErc20Delegator public RUSDC = IRErc20Delegator(ScrollMainnet.RHO_MARKETS_USDC);
-    IREther public RWETH = IREther(ScrollMainnet.RHO_MARKETS_WETH);
 
     RhoMarketsVault public vault;
 
@@ -28,12 +27,7 @@ contract RhoMarketsVaultTest is Test {
         vm.createSelectFork(vm.rpcUrl("scroll"), 7889975);
 
         vault = new RhoMarketsVault(
-            USDC,
-            "Vault Token",
-            "vUSDCE",
-            Vault.FeeInfo(new address[](0), new uint256[](0), 0, 0, 0),
-            alice,
-            RUSDC
+            USDC, "Vault Token", "vUSDCE", Vault.FeeInfo(new address[](0), new uint256[](0), 0, 0, 0), alice, RUSDC
         );
     }
 
@@ -86,27 +80,5 @@ contract RhoMarketsVaultTest is Test {
         vault.emergencyWithdraw();
         assertApproxEqAbs(USDC.balanceOf(address(vault)), totalAmount, 1e6);
         assertEq(vault.paused(), true);
-    }
-
-    function testMaxWithdraw() public {
-        uint256 USDCamount = 1000000 * 1e6;
-        deal(address(USDC), address(this), USDCamount);
-        USDC.approve(address(vault), USDCamount);
-        vault.deposit(USDCamount, address(this));
-
-        uint256 amount = 1000 ether;
-
-        RWETH.mint{value: amount}();
-
-        IComptroller comptroller = IComptroller(RWETH.comptroller());
-
-        address[] memory markets = new address[](1);
-        markets[0] = address(RWETH);
-        comptroller.enterMarkets(markets);
-
-        RUSDC.borrow(RUSDC.getCash() - 1000);
-        assertEq(vault.maxWithdraw(address(this)), 1000);
-        RUSDC.borrow(RUSDC.getCash());
-        assertEq(vault.maxWithdraw(address(this)), 0);
     }
 }

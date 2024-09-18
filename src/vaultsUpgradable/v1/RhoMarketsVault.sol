@@ -12,6 +12,8 @@ import {ERC4626Upgradeable} from "@openzeppelin-upgradeable/contracts/token/ERC2
 import {IComptroller} from "../../interfaces/rhoMarkets/IComptroller.sol";
 import {IRErc20Delegator} from "../../interfaces/rhoMarkets/IRErc20Delegator.sol";
 import {IInterestRateModel} from "../../interfaces/rhoMarkets/IInterestRateModel.sol";
+import {IREther} from "../../interfaces/rhoMarkets/IREther.sol";
+import {IWETH} from "../../interfaces/lazyotter/IWETH.sol";
 
 import {Vault} from "./Vault.sol";
 
@@ -22,6 +24,9 @@ import "forge-std/console.sol";
 /// @dev This contract extends the Vault contract and interacts with Rho Markets' Comptroller and RErc20 contracts
 contract RhoMarketsVault is Vault {
     using SafeERC20 for IERC20;
+
+    IWETH public constant WETH = IWETH(0x5300000000000000000000000000000000000004);
+    IREther public constant RETH = IREther(0x639355f34Ca9935E0004e30bD77b9cE2ADA0E692);
 
     /// @custom:storage-location erc7201:rhoMarketsVaultStorage
     struct RhoMarketsVaultStorage {
@@ -58,6 +63,7 @@ contract RhoMarketsVault is Vault {
         super.initialize(asset_, name_, symbol_, keeper_);
 
         RhoMarketsVaultStorage storage $ = _getRhoMarketsVaultStorage();
+
         $.RErc20 = RErc20_;
         $.comptroller = IComptroller(RErc20_.comptroller());
         $.interestRateModel = IInterestRateModel(RErc20_.interestRateModel());
@@ -73,8 +79,9 @@ contract RhoMarketsVault is Vault {
 
         RhoMarketsVaultStorage storage $ = _getRhoMarketsVaultStorage();
         IComptroller comptroller = $.comptroller;
-        IRErc20Delegator RErc20 = $.RErc20;
         IInterestRateModel interestRateModel = $.interestRateModel;
+
+        IRErc20Delegator RErc20 = $.RErc20;
 
         // Supply cap of 0 corresponds to unlimited supplying
         uint256 supplyCap = comptroller.supplyCaps(address(RErc20));
@@ -165,9 +172,14 @@ contract RhoMarketsVault is Vault {
 
         uint256 currentAssets = asset.balanceOf(address(this));
         if (currentAssets > 0) {
-            asset.safeIncreaseAllowance(address(RErc20), currentAssets);
-            uint256 err = RErc20.mint(currentAssets);
-            require(err == 0, "RErc20.mint failed");
+            if (address(asset) != address(WETH)) {
+                asset.safeIncreaseAllowance(address(RErc20), currentAssets);
+                uint256 err = RErc20.mint(currentAssets);
+                require(err == 0, "RErc20.mint failed");
+            } else {
+                WETH.withdraw(currentAssets);
+                RETH.mint{value: currentAssets}();
+            }
         }
     }
 
@@ -185,25 +197,36 @@ contract RhoMarketsVault is Vault {
             uint256 shortAssets = assets - currentAssets;
             uint256 balanceBefore = asset.balanceOf(address(this));
 
-            uint256 err = RErc20.redeemUnderlying(shortAssets);
-            require(err == 0, "RErc20.redeemUnderlying failed");
+            if (address(asset) != address(WETH)) {
+                uint256 err = RErc20.redeemUnderlying(shortAssets);
+                require(err == 0, "RErc20.redeemUnderlying failed");
+                uint256 balanceAfter = asset.balanceOf(address(this));
+                realWithdrawAssets = currentAssets + balanceAfter - balanceBefore;
+            } else {
+                uint8 err = RETH.redeemUnderlying(shortAssets);
+                require(err == 0, "RETH.redeemUnderlying failed");
+                uint256 balanceAfter = address(this).balance;
 
-            uint256 balanceAfter = asset.balanceOf(address(this));
-            realWithdrawAssets = currentAssets + balanceAfter - balanceBefore;
+                WETH.deposit{value: balanceAfter}();
+                realWithdrawAssets = currentAssets + balanceAfter - balanceBefore;
+            }
         }
 
         return realWithdrawAssets;
     }
 
-    function _withdraw(
-        address caller,
-        address receiver,
-        address owner,
-        uint256 assets,
-        uint256 shares
-    ) internal override {
+    function _withdraw(address caller, address receiver, address owner, uint256 assets, uint256 shares)
+        internal
+        override
+    {
         uint256 realWithdrawAssets = _withdraw_(owner, assets);
 
         ERC4626Upgradeable._withdraw(caller, receiver, owner, realWithdrawAssets, shares);
+    }
+
+    receive() external payable {}
+
+    fallback() external payable {
+        revert("Fallback not allowed");
     }
 }

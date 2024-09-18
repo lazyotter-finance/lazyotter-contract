@@ -7,6 +7,8 @@ import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {IWETH} from "../interfaces/lazyotter/IWETH.sol";
 import {IVault} from "../interfaces/lazyotter/IVault.sol";
 
+import "forge-std/console.sol";
+
 /**
  * @title ETHVaultHelper
  * @dev Helper contract for interacting with WETH and vaults.
@@ -62,9 +64,12 @@ contract ETHVaultHelper {
     function withdrawETH(address vault, uint256 assets) external {
         address payable owner = payable(msg.sender);
 
+        uint256 balanceBefore = WETH.balanceOf(address(this));
         IVault(vault).withdraw(assets, address(this), owner);
-        WETH.withdraw(assets);
-        owner.sendValue(assets);
+        uint256 balanceAfter = WETH.balanceOf(address(this));
+
+        WETH.withdraw(balanceAfter - balanceBefore);
+        owner.sendValue(balanceAfter - balanceBefore);
     }
 
     /**
@@ -75,9 +80,12 @@ contract ETHVaultHelper {
     function redeemETH(address vault, uint256 shares) external {
         address payable owner = payable(msg.sender);
 
-        uint256 assets = IVault(vault).redeem(shares, address(this), owner);
-        WETH.withdraw(assets);
-        owner.sendValue(assets);
+        uint256 balanceBefore = WETH.balanceOf(address(this));
+        IVault(vault).redeem(shares, address(this), owner);
+        uint256 balanceAfter = WETH.balanceOf(address(this));
+
+        WETH.withdraw(balanceAfter - balanceBefore);
+        owner.sendValue(balanceAfter - balanceBefore);
     }
 
     /**
